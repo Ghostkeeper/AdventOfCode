@@ -10,27 +10,9 @@ def who_wins(their, mine):
 	:param mine: The symbol I chose.
 	:return: 0 if I lose, 1 if it's a tie, or 2 if I win.
 	"""
-	if their == "A":
-		if mine == "X" or mine == "A":
-			return 1
-		elif mine == "Y" or mine == "B":
-			return 2
-		else:
-			return 0
-	elif their == "B":
-		if mine == "X" or mine == "A":
-			return 0
-		elif mine == "Y" or mine == "B":
-			return 1
-		else:
-			return 2
-	else:
-		if mine == "X" or mine == "A":
-			return 2
-		elif mine == "Y" or mine == "B":
-			return 0
-		else:
-			return 1
+	to_numeric = {"A": 0, "B": 1, "C": 2,
+	              "X": 0, "Y": 1, "Z": 2}
+	return (to_numeric[mine] - to_numeric[their] + 1) % 3
 
 def my_choice(their, required_outcome):
 	"""
