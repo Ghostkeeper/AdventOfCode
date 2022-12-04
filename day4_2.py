@@ -10,4 +10,4 @@ for line in open(get_input_file.get_path(4, 1)):
 	if elves[0] & elves[1]:
 		num_overlap += 1
 
-print(num_overlap)
+print("Number of pairs with overlap:", num_overlap)

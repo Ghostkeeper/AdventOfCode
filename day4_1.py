@@ -10,4 +10,4 @@ for line in open(get_input_file.get_path(4, 1)):
 	if elves[0] <= elves[1] or elves[1] <= elves[0]:
 		num_contained += 1
 
-print(num_contained)
+print("The number of pairs where one elf's work completely contains the other elf's work:", num_contained)
