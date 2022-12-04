@@ -19,7 +19,7 @@ lines = open(get_input_file.get_path(3, 1)).readlines()
 for i in range(int(len(lines) / 3)):
 	group = lines[i * 3:i * 3 + 3]
 	group = [set(x.strip()) for x in group]
-	common = group[0].intersection(group[1]).intersection(group[2])
+	common = group[0] & group[1] & group[2]
 	assert len(common) == 1
 	priority_sum += priority(common.pop())
 
