@@ -35,3 +35,19 @@ def parse_terminal(terminal_output):
 				del lines[0]
 
 	return tree
+
+def get_size(tree):
+	"""
+	Get the total size of a file tree.
+	:param tree: A file tree to get the size of.
+	:return: The size, as integer.
+	"""
+	total = 0
+	for name, value in tree.items():
+		if name == "..":
+			continue  # Don't go up.
+		if type(value) is int:
+			total += value
+		else:
+			total += get_size(value)
+	return total
