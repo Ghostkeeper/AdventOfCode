@@ -36,4 +36,4 @@ for x in range(width):
 			score *= count_visible(x, y, direction)
 		highest_score = max(highest_score, score)
 
-print(highest_score)
+print("The best scenic score for any tree is:", highest_score)
