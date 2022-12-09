@@ -19,8 +19,11 @@ class Rope:
 		"""
 		self.x += 1
 		if self.tail and self.x - self.tail.x == 2:
-			self.tail.x += 1
-			self.tail.y = self.y
+			self.tail.right()
+			if self.tail.y < self.y:
+				self.tail.down()
+			elif self.tail.y > self.y:
+				self.tail.up()
 
 	def left(self):
 		"""
@@ -28,8 +31,11 @@ class Rope:
 		"""
 		self.x -= 1
 		if self.tail and self.tail.x - self.x == 2:
-			self.tail.x -= 1
-			self.tail.y = self.y
+			self.tail.left()
+			if self.tail.y < self.y:
+				self.tail.down()
+			elif self.tail.y > self.y:
+				self.tail.up()
 
 	def up(self):
 		"""
@@ -37,8 +43,11 @@ class Rope:
 		"""
 		self.y -= 1
 		if self.tail and self.tail.y - self.y == 2:
-			self.tail.y -= 1
-			self.tail.x = self.x
+			self.tail.up()
+			if self.tail.x < self.x:
+				self.tail.right()
+			elif self.tail.x > self.x:
+				self.tail.left()
 
 	def down(self):
 		"""
@@ -46,5 +55,8 @@ class Rope:
 		"""
 		self.y += 1
 		if self.tail and self.y - self.tail.y == 2:
-			self.tail.y += 1
-			self.tail.x = self.x
+			self.tail.down()
+			if self.tail.x < self.x:
+				self.tail.right()
+			elif self.tail.x > self.x:
+				self.tail.left()
