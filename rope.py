@@ -18,45 +18,57 @@ class Rope:
 		Move the head right by 1 place.
 		"""
 		self.x += 1
-		if self.tail and self.x - self.tail.x == 2:
-			self.tail.right()
-			if self.tail.y < self.y:
-				self.tail.down()
-			elif self.tail.y > self.y:
-				self.tail.up()
+		if self.tail:
+			self.tail.follow(self)
 
 	def left(self):
 		"""
 		Move the head left by 1 place.
 		"""
 		self.x -= 1
-		if self.tail and self.tail.x - self.x == 2:
-			self.tail.left()
-			if self.tail.y < self.y:
-				self.tail.down()
-			elif self.tail.y > self.y:
-				self.tail.up()
+		if self.tail:
+			self.tail.follow(self)
 
 	def up(self):
 		"""
 		Move the head up by 1 place.
 		"""
 		self.y -= 1
-		if self.tail and self.tail.y - self.y == 2:
-			self.tail.up()
-			if self.tail.x < self.x:
-				self.tail.right()
-			elif self.tail.x > self.x:
-				self.tail.left()
+		if self.tail:
+			self.tail.follow(self)
 
 	def down(self):
 		"""
 		Move the head down by 1 place.
 		"""
 		self.y += 1
-		if self.tail and self.y - self.tail.y == 2:
-			self.tail.down()
-			if self.tail.x < self.x:
-				self.tail.right()
-			elif self.tail.x > self.x:
-				self.tail.left()
+		if self.tail:
+			self.tail.follow(self)
+
+	def follow(self, rope):
+		"""
+		Move this rope to follow another rope.
+		:param rope: The rope to follow.
+		"""
+		if rope.x - self.x == 2:
+			if rope.y - self.y >= 1:
+				self.y += 1
+			elif rope.y - self.y <= -1:
+				self.y -= 1
+			self.x += 1
+		elif rope.x - self.x == -2:
+			if rope.y - self.y >= 1:
+				self.y += 1
+			elif rope.y - self.y <= -1:
+				self.y -= 1
+			self.x -= 1
+		else:
+			if rope.y - self.y == 2:
+				self.y += 1
+				self.x = rope.x
+			elif rope.y - self.y == -2:
+				self.y -= 1
+				self.x = rope.x
+
+		if self.tail:
+			self.tail.follow(self)
