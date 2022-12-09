@@ -72,3 +72,33 @@ class Rope:
 
 		if self.tail:
 			self.tail.follow(self)
+
+	def visualise(self):
+		"""
+		Print a visualisation of the whole rope (this rope with all its tails).
+		"""
+		minx = 0
+		maxx = 0
+		miny = 0
+		maxy = 0
+		t = self
+		while t:
+			minx = min(minx, t.x)
+			maxx = max(maxx, t.x)
+			miny = min(miny, t.y)
+			maxy = max(maxy, t.y)
+			t = t.tail
+		grid = [("." * (-minx + maxx + 1)) for _ in range(-miny + maxy + 1)]
+
+		i = 0
+		t = self
+		while t:
+			x = t.x - minx
+			y = t.y - miny
+			grid[y] = grid[y][:x] + str(i) + grid[y][x + 1:]
+			i += 1
+			t = t.tail
+
+		for line in grid:
+			print(line)
+		print()
