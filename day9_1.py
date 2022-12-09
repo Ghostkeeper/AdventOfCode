@@ -7,6 +7,7 @@ commands = open(get_input_file.get_path(9, 1)).readlines()
 commands = [command.strip() for command in commands]
 
 r = rope.Rope()
+r.tail = rope.Rope()
 directions = {
 	"R": r.right,
 	"L": r.left,
@@ -20,6 +21,6 @@ for command in commands:
 	distance = int(command.split(" ")[1])
 	for _ in range(distance):  # Repeat N times.
 		direction()
-		tail_positions.add((r.tail_x, r.tail_y))
+		tail_positions.add((r.tail.x, r.tail.y))
 
 print("Number of unique positions for the tail:", len(tail_positions))
