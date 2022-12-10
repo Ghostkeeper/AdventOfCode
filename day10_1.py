@@ -19,7 +19,8 @@ for command in commands:
 		parts = command.split(" ")
 		delta = int(parts[1])
 		if cycle in interesting_cycles or cycle + 1 in interesting_cycles:
-			sum_interesting_signals += x * cycle
+			interesting_cycle = cycle if cycle in interesting_cycles else (cycle + 1)
+			sum_interesting_signals += x * interesting_cycle
 		x += delta
 		cycle += 2
 
