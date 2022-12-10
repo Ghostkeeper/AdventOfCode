@@ -8,7 +8,7 @@ commands = [command.strip() for command in commands]
 interesting_cycles = {20, 60, 100, 140, 180, 220}
 sum_interesting_signals = 0
 
-x = 0
+x = 1
 cycle = 0
 for command in commands:
 	if command == "noop":
