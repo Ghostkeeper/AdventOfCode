@@ -18,5 +18,6 @@ times_inspected = []
 for monkey in monkeys:
 	times_inspected.append(monkey.times_inspected)
 times_inspected.sort()
+times_inspected = list(reversed(times_inspected))
 
 print("The total amount of monkey business is:", times_inspected[0] * times_inspected[1])
