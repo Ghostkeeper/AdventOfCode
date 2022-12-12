@@ -1,11 +1,12 @@
 # Advent of code 2022, by Ghostkeeper
 
 class Monkey:
-	def __init__(self, state_str, monkeys):
+	def __init__(self, state_str, monkeys, worry_reduction):
 		"""
 		Construct a monkey.
 		:param state_str: A part of the input that determines the starting state of the monkey.
 		:param monkeys: The list of all monkeys.
+		:param worry_reduction: The factor by which the worry is reduced after the monkey inspects the item.
 		"""
 		self.items = []
 		self.operation = lambda old: old
@@ -29,7 +30,9 @@ class Monkey:
 				self.throw_false = int(line[len("    If false: throw to monkey "):])
 
 		self.monkeys = monkeys
+		self.worry_reduction = worry_reduction
 		self.times_inspected = 0  # How often this monkey has inspected an item.
+		self.worry_modulus = 1  # To reduce huge numbers, you can give a modulus by which to divide worry levels.
 
 	def turn(self):
 		"""
@@ -39,7 +42,9 @@ class Monkey:
 			item = self.items[0]
 			item = self.operation(item)  # Inspecting, worry level increases.
 			self.times_inspected += 1
-			item = int(item / 3)  # Worry level is divided by 3 after inspecting.
+			item = int(item / self.worry_reduction)  # Worry level is reduced after inspecting.
+			if self.worry_modulus > 1 and item > self.worry_modulus:
+				item %= self.worry_modulus
 			if item % self.divisible_test == 0:
 				self.monkeys[self.throw_true].items.append(item)
 			else:
