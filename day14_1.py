@@ -51,7 +51,7 @@ while True:
 		elif cave[sand[1] + 1][sand[0] - 1] == 0:  # Air bottom left.
 			sand[0] -= 1
 			sand[1] += 1
-		elif cave[sand[1] + 1][sand[0] - 1] == 0:  # Air bottom right.
+		elif cave[sand[1] + 1][sand[0] + 1] == 0:  # Air bottom right.
 			sand[0] += 1
 			sand[1] += 1
 		else:
