@@ -5,10 +5,11 @@ class Cave:
 	Represents a cave where sand flows inside.
 	"""
 
-	def __init__(self, rock_lines):
+	def __init__(self, rock_lines, floor=False):
 		"""
 		Constructs a cave from polynomial descriptions of the rocks.
 		:param rock_lines: A string, with on each line a sequence of vertices.
+		:param floor: Whether to add an infinite floor beneath the cave.
 		"""
 		rock_lines = rock_lines.split("\n")
 		rock_lines = [line.split(" -> ") for line in rock_lines]
@@ -25,11 +26,17 @@ class Cave:
 		miny = min(miny, self.starty)
 		maxx = max(maxx, self.startx)
 		maxy = max(maxy, self.starty)
+		if floor:
+			maxy += 2  # Allow extra space for the "infinite" floor.
+			minx -= maxy  # Allow horizontal space for the sand to pile up too.
+			maxx += maxy
 		self.startx -= minx
 		self.starty -= miny
 		self.cave = [[0 for x in range(minx, maxx + 1)] for y in range(miny, maxy + 1)]  # 0 represents air.
 
 		# Place rocks in the cave.
+		if floor:
+			rock_lines.append([(minx, maxy), (maxx, maxy)])
 		for line in rock_lines:
 			x = line[0][0]
 			y = line[0][1]
@@ -54,6 +61,8 @@ class Cave:
 		"""
 		while True:
 			sand = [self.startx, self.starty]
+			if self.cave[sand[1]][sand[0]] != 0:  # No space at the start position.
+				return
 			while True:
 				if sand[1] + 1 >= len(self.cave):  # Abyss beneath.
 					return
