@@ -38,3 +38,29 @@ for line in rock_lines:
 			x += dx
 			y += dy
 			cave[y - miny][x - minx] = 1
+
+flowing_sand = []
+while True:
+	flowing_sand.append([startx - minx, starty - miny])
+	done = False
+	to_remove = set()
+	for i in range(len(flowing_sand)):
+		sand = flowing_sand[i]
+		if sand[1] + 1 >= len(cave):  # Abyss beneath.
+			done = True  # But do process the other sand.
+		elif cave[sand[1] + 1][sand[0]] == 0:  # Air beneath.
+			sand[1] += 1
+		elif cave[sand[1] + 1][sand[0] - 1] == 0:  # Air bottom left.
+			sand[0] -= 1
+			sand[1] += 1
+		elif cave[sand[1] + 1][sand[0] - 1] == 0:  # Air bottom right.
+			sand[0] += 1
+			sand[1] += 1
+		else:
+			to_remove.add(i)
+			cave[sand[1]][sand[0]] = 2  # To indicate settled sand.
+	if done:
+		break
+
+settled_sand_count = sum([row.count(2) for row in cave])
+print("The amount of settled sand is:", settled_sand_count)
