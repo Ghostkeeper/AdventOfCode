@@ -36,3 +36,16 @@ class Sensor:
 			return self.x, self.x  # Empty range.
 		dx = self.range - dy
 		return self.x - dx, self.x + dx + 1
+
+	def get_bounds(self):
+		"""
+		Returns a diamond shape with four coordinates as a tuple (size 4) of tuples (size 2, for X and Y) of the range
+		of this sensor.
+
+		This can be plugged directly into PyClipper.
+		:return: A tuple of tuples, containing the coordinates of the vertices of the diamond shaped sensor range.
+		"""
+		return ((self.x + self.range, self.y),
+		        (self.x, self.y - self.range),
+		        (self.x - self.range, self.y),
+		        (self.x, self.y + self.range))
