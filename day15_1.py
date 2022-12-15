@@ -67,7 +67,7 @@ beacons = set()
 for match in re.finditer(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)", text):
 	sensorx, sensory, beaconx, beacony = match.groups()
 	sensors.append(Sensor(int(sensorx), int(sensory), int(beaconx), int(beacony)))
-	beacons.add((beaconx, beacony))
+	beacons.add((int(beaconx), int(beacony)))
 
 ranges = []
 for sensor in sensors:
