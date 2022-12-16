@@ -81,16 +81,18 @@ for i in range(len(adjacent)):
 	adjacent[i] = [(vertex, length) for (vertex, length) in adjacent[i] if vertex < num_relevant]
 
 @functools.lru_cache(maxsize=None)
-def most_flow(time_left, current_pos, open_valves):
+def most_flow(time_left, el_time_left, current_pos, elephant_pos, open_valves):
 	"""
 	Find the most flow rate we can add in a certain amount of time, while starting at the current position vertex, and
 	already having opened a number of valves.
 	:param time_left: The amount of time we have left, in minutes.
+	:param el_time_left: The amount of time the elephant has left, in minutes.
 	:param current_pos: The current vertex we are at.
+	:param elephant_pos: The current position of the elephant.
 	:param open_valves: A bitfield of the valves that are opened so far.
 	:return: The greatest amount of flow rate that we could yet add.
 	"""
-	if time_left <= 0:
+	if time_left <= 0 and el_time_left <= 0:
 		return 0  # No time to open additional valves.
 
 	greatest_flow = 0
@@ -99,14 +101,44 @@ def most_flow(time_left, current_pos, open_valves):
 			continue
 		if time_left <= distance + 1:  # Not enough time to go there and open the valve there.
 			continue
-		this_flow = most_flow(time_left - distance - 1, neighbour, open_valves | (1 << neighbour))
-		this_flow += flow_rate[neighbour] * (time_left - distance - 1)
-		if this_flow > greatest_flow:
-			greatest_flow = this_flow
+
+		for el_neighbour, el_distance in adjacent[elephant_pos]:
+			if open_valves & (1 << el_neighbour) > 0:  # Already opened.
+				continue
+			if el_time_left <= el_distance + 1:  # Not enough time to go there and open the valve there.
+				continue
+			if el_neighbour == neighbour:  # Can't open the same one twice at the same time.
+				continue
+			this_flow = most_flow(time_left - distance - 1, el_time_left - el_distance - 1, neighbour, el_neighbour, open_valves | (1 << neighbour) | (1 << el_neighbour))
+			this_flow += flow_rate[neighbour] * (time_left - distance - 1) + flow_rate[el_neighbour] * (el_time_left - el_distance - 1)
+
+			if this_flow > greatest_flow:
+				greatest_flow = this_flow
+
+		if el_time_left > 0:
+			# Also try with no movement by the elephant.
+			this_flow = most_flow(time_left - distance - 1, 0, neighbour, elephant_pos, open_valves | (1 << neighbour))
+			this_flow += flow_rate[neighbour] * (time_left - distance - 1)
+			if this_flow > greatest_flow:
+				greatest_flow = this_flow
+
+	if time_left > 0:
+		# Also try with no movement by me.
+		for el_neighbour, el_distance in adjacent[elephant_pos]:
+			if open_valves & (1 << el_neighbour) > 0:  # Already opened.
+				continue
+			if el_time_left <= el_distance + 1:  # Not enough time to go there and open the valve there.
+				continue
+			this_flow = most_flow(0, el_time_left - el_distance - 1, current_pos, el_neighbour, open_valves | (1 << el_neighbour))
+			this_flow += flow_rate[el_neighbour] * (el_time_left - el_distance - 1)
+
+			if this_flow > greatest_flow:
+				greatest_flow = this_flow
+
 	return greatest_flow
 
 start_open = 0
 if flow_rate[-1] != 0:  # Never need to open this one since it has 0 flow. Pretend it's already open instead.
 	start_open = 1 << num_relevant - 1
-best = most_flow(30, num_relevant - 1, 0)
+best = most_flow(26, 26, num_relevant - 1, num_relevant - 1, 0)
 print("The greatest amount of flow you could open is:", best)
