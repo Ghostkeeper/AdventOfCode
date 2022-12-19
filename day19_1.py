@@ -15,8 +15,7 @@ for match in re.finditer(r"Blueprint \d\d?: Each ore robot costs (\d+) ore. Each
 	                         obsbot=(int(match.group(3)), int(match.group(4)), 0),
 	                         geobot=(int(match.group(5)), 0, int(match.group(6)))))
 
-best_time = 0
-@functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=100_000_000)
 def most_geodes(time_left, factory, orebots, claybots, obsbots, geobots, ores, clays, obss):
 	"""
 	Calculate the maximum amount of geodes you could gather with the given resources and bots in a certain amount of
@@ -60,18 +59,13 @@ def most_geodes(time_left, factory, orebots, claybots, obsbots, geobots, ores, c
 		geodes = most_geodes(time_left - 1, factory, orebots, claybots, obsbots, geobots + 1, ores + orebots - factory.geobot[0], clays + claybots - factory.geobot[1], obss + obsbots - factory.geobot[2]) + geobots
 		best_geodes = max(best_geodes, geodes)
 
-	global best_time
-	if time_left > best_time:
-		best_time = max(best_time, time_left)
-		print(best_time)
-
 	return best_geodes
 
 total_quality = 0
 for i, factory in enumerate(factories):
 	best_time = 0
 	geodes = most_geodes(24, factory, 1, 0, 0, 0, 0, 0, 0)
+	most_geodes.cache_clear()
 	total_quality += (i + 1) * geodes
-	print("Could get", geodes, "geodes, quality is", (i + 1) * geodes, "making total", total_quality)
 
 print("The sum of quality levels for each factory is:", total_quality)
