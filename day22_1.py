@@ -36,13 +36,9 @@ for instruction in re.finditer(r"\d+|[LR]", instructions):
 		for _ in range(distance):
 			cy = (y + dy) % len(map)
 			cx = (x + dx) % len(map[cy])  # Candidate position to move towards.
-			try:
-				while map[cy][cx] == " ":  # Edge of map. Wrap around until we find a part of the map again.
-					cy = (cy + dy) % len(map)
-					cx = (cx + dx) % len(map[cy])
-			except IndexError as e:
-				print(f"Y:{y}, len(map[y]):{len(map[y])}, CY:{cy} len(map[cy]):{len(map[cy])}")
-				raise e
+			while map[cy][cx] == " ":  # Edge of map. Wrap around until we find a part of the map again.
+				cy = (cy + dy) % len(map)
+				cx = (cx + dx) % len(map[cy])
 			if map[cy][cx] == "#":
 				break  # Stop movement here.
 			else:
