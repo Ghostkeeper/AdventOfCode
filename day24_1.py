@@ -96,7 +96,6 @@ def get_neighbours(x, y, t):
 open = queue.PriorityQueue()  # Queue of coordinates yet to be processed. Each coordinate is a tuple of (estimate, x, y, t)
 open.put((estimate(0, 0), 0, 0, 0))  # Start from position 0, 0 on T=0
 open_set = {(0, 0, 0)}
-from_where = {}  # For each cell, what coordinate we came from to reconstruct the shortest path.
 to_start = [[[float("inf") for _ in grids[0][0]] for _ in grids[0]] for _ in grids]
 to_start[0][0][0] = 0
 total_dist = [[[float("inf") for _ in grids[0][0]] for _ in grids[0]] for _ in grids]
@@ -107,12 +106,7 @@ while open_set:
 	open_set.remove((x, y, t))
 
 	if x == endx and y == endy:
-		# Found the shortest path! Reconstruct it with from_where.
-		#path = [(endx, endy, t)]
-		#while x != 0 or y != 0 or t != 0:
-		#	x, y, t = from_where[(x, y, t)]
-		#	path.append((x, y, t))
-		#path.pop()  # Don't include the start position.
+		# Found the shortest path! T is now the time it took.
 		print("The shortest path to the finish has length:", t)
 		break
 
@@ -125,7 +119,6 @@ while open_set:
 		if dist_so_far < to_start[t + 1][neighboury][neighbourx]:  # Better approached from this direction.
 			to_start[t + 1][neighboury][neighbourx] = dist_so_far
 			total_dist[t + 1][neighboury][neighbourx] = dist_so_far + estimate(neighbourx, neighboury)
-			from_where[(neighbourx, neighboury, t + 1)] = x, y, t
 			if (x, y, t) not in open_set:
 				open.put((total_dist[t + 1][neighboury][neighbourx], neighbourx, neighboury, t + 1))
 				open_set.add((neighbourx, neighboury, t + 1))
