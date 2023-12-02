@@ -15,25 +15,6 @@ pub fn part1(input: String) {
 
 pub fn part2(input: String) {
 	let replacement = HashMap::from([
-		// ("eleven", "11"),
-		// ("twelve", "12"),
-		// ("thirteen", "13"),
-		// ("fourteen", "14"),
-		// ("fifteen", "15"),
-		// ("sixteen", "16"),
-		// ("seventeen", "17"),
-		// ("eighteen", "18"),
-		// ("nineteen", "19"),
-		// ("ten", "10"),
-		// ("twenty", "20"),
-		// ("thirty", "30"),
-		// ("fourty", "40"),
-		// ("fifty", "50"),
-		// ("sixty", "60"),
-		// ("seventy", "70"),
-		// ("eighty", "80"),
-		// ("ninety", "90"),
-		// ("hundred", "100"),
 		("one", 1),
 		("1", 1),
 		("two", 2),
@@ -52,7 +33,6 @@ pub fn part2(input: String) {
 		("8", 8),
 		("nine", 9),
 		("9", 9),
-		// ("zero", "0"),
 	]);
 	let mut sum = 0;
 	let re = Regex::new(r"[^0-9]").unwrap();
