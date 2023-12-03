@@ -35,7 +35,6 @@ pub fn part2(input: String) {
 		("9", 9),
 	]);
 	let mut sum = 0;
-	let re = Regex::new(r"[^0-9]").unwrap();
 	for line in input.split("\n") {
 		let mut first = 0;
 		let mut last = 0;
