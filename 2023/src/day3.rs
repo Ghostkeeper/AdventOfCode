@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 fn to_grid(input: String) -> Vec<Vec<char>> {
 	let mut result = vec!();
@@ -64,7 +64,7 @@ pub fn part1(input: String) {
 	println!("{}", sum);
 }
 
-fn register_gear(partial_gears: &mut HashMap<(i32, i32), i32>, mut sum: &mut i32, x: i32, y: i32, part_nr: i32) {
+fn register_gear(partial_gears: &mut HashMap<(i32, i32), i32>, sum: &mut i32, x: i32, y: i32, part_nr: i32) {
 	if partial_gears.contains_key(&(x, y)) {
 		*sum += partial_gears.get(&(x, y)).unwrap() * part_nr;
 		partial_gears.remove(&(x, y));

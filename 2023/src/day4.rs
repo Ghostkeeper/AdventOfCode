@@ -22,3 +22,35 @@ pub fn part1(input: String) {
 	}
 	println!("{}", sum);
 }
+
+pub fn part2(input: String) {
+	let mut lines = input.split("\n").collect::<Vec<&str>>();
+	let mut line_id = 0;
+	while line_id < lines.len() {
+		let line = lines[line_id];
+		let card_id = line[5..8].split_whitespace().collect::<Vec<&str>>()[0].parse::<usize>().unwrap();
+		let mut sides = line[10..].split(" | ");
+		let left = sides.next().unwrap();
+		let right = sides.next().unwrap();
+		let mut left_nums = HashSet::new();
+		for num in left.split_whitespace() {
+			left_nums.insert(num.parse::<i32>().unwrap());
+		}
+		let mut right_nums = HashSet::new();
+		for num in right.split_whitespace() {
+			right_nums.insert(num.parse::<i32>().unwrap());
+		}
+		let in_common = left_nums.intersection(&right_nums).collect::<Vec<&i32>>();
+		let amount_in_common = in_common.len();
+		//println!("Amount in common: {}", amount_in_common);
+		for copied_id in 0..amount_in_common {
+			//println!("Copy card: {}", card_id + copied_id + 1);
+			lines.push(lines[card_id + copied_id]);
+		}
+		line_id += 1;
+		if lines.len() % 10000 == 0 {
+			println!("so far: {}", lines.len());
+		}
+	}
+	println!("{}", lines.len());
+}
