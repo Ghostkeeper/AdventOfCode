@@ -42,9 +42,7 @@ pub fn part2(input: String) {
 		}
 		let in_common = left_nums.intersection(&right_nums).collect::<Vec<&i32>>();
 		let amount_in_common = in_common.len();
-		//println!("Amount in common: {}", amount_in_common);
 		for copied_id in 0..amount_in_common {
-			//println!("Copy card: {}", card_id + copied_id + 1);
 			lines.push(lines[card_id + copied_id]);
 		}
 		line_id += 1;
