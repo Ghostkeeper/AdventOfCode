@@ -1,18 +1,18 @@
-fn parse(input: String) -> (Vec<i32>, Vec<i32>) {
+fn parse(input: String) -> (Vec<i64>, Vec<i64>) {
     let mut time = vec!();
     let mut space = vec!();
     for line in input.split("\n") {
         if line.starts_with("Time:") {
-            time = line[9..].split_whitespace().map(|s| s.parse::<i32>().unwrap()).collect();
+            time = line[9..].split_whitespace().map(|s| s.parse::<i64>().unwrap()).collect();
         }
         if line.starts_with("Distance:") {
-            space = line[9..].split_whitespace().map(|s| s.parse::<i32>().unwrap()).collect();
+            space = line[9..].split_whitespace().map(|s| s.parse::<i64>().unwrap()).collect();
         }
     }
     return (time, space);
 }
 
-fn dist(time: i32, hold: i32) -> i32 {
+fn dist(time: i64, hold: i64) -> i64 {
     return (time - hold) * hold;
 }
 
@@ -34,4 +34,30 @@ pub fn part1(input: String) {
         result *= wins;
     }
     println!("{}", result);
+}
+
+fn parse_dumb(input: String) -> (i64, i64) {
+    let mut time = 0i64;
+    let mut space = 0i64;
+    for line in input.split("\n") {
+        if line.starts_with("Time:") {
+            time = line[9..].replace(" ", "").parse::<i64>().unwrap();
+        }
+        if line.starts_with("Distance:") {
+            space = line[9..].replace(" ", "").parse::<i64>().unwrap();
+        }
+    }
+    return (time, space);
+}
+
+pub fn part2(input: String) {
+    let (time, space) = parse_dumb(input);
+
+    let mut num_win = 0usize;
+    for hold in 0..time {
+        if dist(time, hold) > space {
+            num_win += 1;
+        }
+    }
+    println!("{}", num_win);
 }
