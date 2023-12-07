@@ -11,6 +11,7 @@ enum Combination {
     FiveOfAKind = 6,
 }
 static ORDER: [char; 13] = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+static ORDER2: [char; 13] = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
 
 fn parse(input: String) -> Vec<([char; 5], usize)>{
     let mut result = vec!();
@@ -23,6 +24,23 @@ fn parse(input: String) -> Vec<([char; 5], usize)>{
     return result;
 }
 
+fn expand_jokers(hand: [char; 5]) -> [char; 5] {
+    let mut histogram = [0; 13];
+    for card in hand {
+        histogram[ORDER2.iter().position(|c| *c == card).unwrap()] += 1;
+    }
+    let mut best_card = 0;
+    let mut best_combi = 0;
+    for i in 1usize..13 {
+        if histogram[i] > best_combi {
+            best_card = i;
+            best_combi = histogram[i];
+        }
+    }
+
+    return hand.map(|c| if c == 'J' { ORDER2[best_card] } else { c });
+}
+
 fn get_combination(hand: [char; 5]) -> Combination {
     let mut histogram = [0; 13];
     for card in hand {
@@ -30,19 +48,19 @@ fn get_combination(hand: [char; 5]) -> Combination {
     }
     histogram.sort();
     if histogram[12] == 5 {
-        return Combination::FiveOfAKind;
+        Combination::FiveOfAKind
     } else if histogram[12] == 4 {
-        return Combination::FourOfAKind;
+        Combination::FourOfAKind
     } else if histogram[12] == 3 && histogram[11] == 2 {
-        return Combination::FullHouse;
+        Combination::FullHouse
     } else if histogram[12] == 3 && histogram[11] == 1 {
-        return Combination::ThreeOfAKind;
+        Combination::ThreeOfAKind
     } else if histogram[12] == 2 && histogram[11] == 2 {
-        return Combination::TwoPair;
+        Combination::TwoPair
     } else if histogram[12] == 2 && histogram[11] == 1 {
-        return Combination::OnePair;
+        Combination::OnePair
     } else {
-        return Combination::HighCard;
+        Combination::HighCard
     }
 }
 
@@ -60,11 +78,36 @@ fn comparison(left_hand: &([char; 5], usize), right_hand: &([char; 5], usize)) -
     return left_ids.cmp(&right_ids);
 }
 
+fn comparison_jokers(left_hand: &([char; 5], usize), right_hand: &([char; 5], usize)) -> Ordering {
+    let left_combi = get_combination(expand_jokers(left_hand.0)) as i32;
+    let right_combi = get_combination(expand_jokers(right_hand.0)) as i32;
+    if left_combi < right_combi {
+        return Ordering::Less;
+    }
+    if left_combi > right_combi {
+        return Ordering::Greater;
+    }
+    let left_ids = left_hand.0.map(|c| ORDER2.iter().position(|c2| *c2 == c).unwrap());
+    let right_ids = right_hand.0.map(|c| ORDER2.iter().position(|c2| *c2 == c).unwrap());
+    return left_ids.cmp(&right_ids);
+}
+
 pub fn part1(input: String) {
     let mut hands = parse(input);
     hands.sort_by(comparison);
     let mut result = 0;
     for (rank, hand) in hands.iter().enumerate() {
+        result += (rank + 1) * hand.1;
+    }
+    println!("{}", result);
+}
+
+pub fn part2(input: String) {
+    let mut hands = parse(input);
+    hands.sort_by(comparison_jokers);
+    let mut result = 0;
+    for (rank, hand) in hands.iter().enumerate() {
+        println!("{:?}", hand.0);
         result += (rank + 1) * hand.1;
     }
     println!("{}", result);
