@@ -7,8 +7,9 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 fn main() {
-	let contents = fs::read_to_string("inputs/day7_1.txt").expect("File should exist.");
-	day7::part2(contents);
+	let contents = fs::read_to_string("inputs/day8_1.txt").expect("File should exist.");
+	day8::part1(contents);
 }
