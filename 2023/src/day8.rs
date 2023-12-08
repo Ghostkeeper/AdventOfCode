@@ -55,3 +55,30 @@ pub fn part1(input: String) {
 	}
 	println!("Steps: {}", steps);
 }
+
+pub fn part2(input: String) {
+	let graph = parse_graph(input.clone());
+	let directions = input.split("\n").next().unwrap().chars().collect_vec();
+	let starts = graph.iter().positions(|node| node.0.ends_with("A")).collect_vec();
+	let mut cycle_length = vec!();
+	for start in starts {
+		let mut steps = 0;
+		let mut pos = start;
+		while !graph[pos].0.ends_with("Z") {
+			let direction = directions[steps % directions.len()];
+			if direction == 'L' {
+				pos = graph[pos].1;
+			} else if direction == 'R' {
+				pos = graph[pos].2;
+			} else { panic!("Unknown direction."); }
+			steps += 1;
+		}
+		cycle_length.push(steps);
+	}
+
+	let mut result: u64 = 1;
+	for cycle in cycle_length {
+		result = num::integer::lcm(cycle as u64, result);
+	}
+	println!("{}", result);
+}
