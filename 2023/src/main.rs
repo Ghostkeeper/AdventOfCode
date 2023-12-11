@@ -14,5 +14,5 @@ mod day11;
 
 fn main() {
 	let contents = fs::read_to_string("inputs/day11_1.txt").expect("File should exist.");
-	day11::part1(contents);
+	day11::part2(contents);
 }
