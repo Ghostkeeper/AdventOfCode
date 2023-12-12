@@ -41,6 +41,7 @@ fn is_valid(field: &Vec<char>, sequence: &Vec<i32>) -> bool {
 
 fn num_valid(field: &Vec<char>, sequence: &Vec<i32>) -> usize {
 	let num_unknown = field.iter().filter(|c| **c == '?').count();
+	println!("-- num_unknown: {}", num_unknown);
 	let mut valid = 0usize;
 	for bitfield in 0usize..(1 << num_unknown) {
 		let mut filled_in = field.clone();
@@ -67,6 +68,22 @@ pub fn part1(input: String) {
 	let mut sum_arrangements = 0;
 	for i in 0..fields.len() {
 		let num = num_valid(&fields[i], &sequences[i]);
+		sum_arrangements += num;
+	}
+	println!("{}", sum_arrangements)
+}
+
+pub fn part2(input: String) {
+	let (fields, sequences) = parse(input);
+	let mut sum_arrangements = 0;
+	for i in 0..fields.len() {
+		let mut multiplied_field: Vec<char> = vec!();
+		let mut multiplied_sequence: Vec<i32> = vec!();
+		for n in 0..5 {
+			multiplied_field.append(&mut fields[i].clone());
+			multiplied_sequence.append(&mut sequences[i].clone());
+		}
+		let num = num_valid(&multiplied_field, &multiplied_sequence);
 		sum_arrangements += num;
 	}
 	println!("{}", sum_arrangements)
