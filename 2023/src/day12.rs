@@ -86,6 +86,11 @@ pub fn part2(input: String) {
 	let (fields, sequences) = parse(input);
 	let mut sum_arrangements = 0;
 	for i in 0..fields.len() {
+		let original_num = num_valid(fields[i].as_bytes(), &sequences[i]);
+		if original_num == 1 {
+			sum_arrangements += 1; //Then the multiplied field is also 1.
+			continue;
+		}
 		let mut multiplied_field = String::new();
 		let mut multiplied_sequence: Vec<i32> = vec!();
 		for _ in 0..5 {
