@@ -35,7 +35,7 @@ fn parse_graph(input: String) -> Vec<(String, usize, usize)> {
 	return result;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let graph = parse_graph(input.clone());
 	let directions = input.split("\n").next().unwrap().chars().collect_vec();
 	let mut position = graph.iter().position(|node| node.0 == "AAA").expect("There needs to be an AAA node.");
@@ -53,10 +53,10 @@ pub fn part1(input: String) {
 		instruction = (instruction + 1) % directions.len();
 		steps += 1;
 	}
-	println!("Steps: {}", steps);
+	return steps;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> u64 {
 	let graph = parse_graph(input.clone());
 	let directions = input.split("\n").next().unwrap().chars().collect_vec();
 	let starts = graph.iter().positions(|node| node.0.ends_with("A")).collect_vec();
@@ -80,5 +80,5 @@ pub fn part2(input: String) {
 	for cycle in cycle_length {
 		result = num::integer::lcm(cycle as u64, result);
 	}
-	println!("{}", result);
+	return result;
 }

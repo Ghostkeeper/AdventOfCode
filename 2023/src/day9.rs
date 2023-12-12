@@ -36,20 +36,20 @@ fn extrapolate_back(sequence: Vec<i32>) -> i32 {
 	return sequence[0] - prev_derivative;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let sequences = parse(input);
 	let mut sum = 0;
 	for sequence in sequences {
 		sum += extrapolate(sequence);
 	}
-	println!("{}", sum);
+	return sum;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i32 {
 	let sequences = parse(input);
 	let mut sum = 0;
 	for sequence in sequences {
 		sum += extrapolate_back(sequence);
 	}
-	println!("{}", sum);
+	return sum;
 }

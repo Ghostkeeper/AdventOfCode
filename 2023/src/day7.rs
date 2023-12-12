@@ -92,17 +92,17 @@ fn comparison_jokers(left_hand: &([char; 5], usize), right_hand: &([char; 5], us
     return left_ids.cmp(&right_ids);
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> usize {
     let mut hands = parse(input);
     hands.sort_by(comparison);
     let mut result = 0;
     for (rank, hand) in hands.iter().enumerate() {
         result += (rank + 1) * hand.1;
     }
-    println!("{}", result);
+    return result;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> usize {
     let mut hands = parse(input);
     hands.sort_by(comparison_jokers);
     let mut result = 0;
@@ -110,5 +110,5 @@ pub fn part2(input: String) {
         println!("{:?}", hand.0);
         result += (rank + 1) * hand.1;
     }
-    println!("{}", result);
+    return result;
 }

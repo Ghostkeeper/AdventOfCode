@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let mut sum = 0;
 	for line in input.split("\n") {
 		let mut sides = line[10..].split(" | ");
@@ -20,10 +20,10 @@ pub fn part1(input: String) {
 			sum += 1 << (amount_in_common - 1);
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> usize {
 	let mut lines = input.split("\n").collect::<Vec<&str>>();
 	let mut line_id = 0;
 	while line_id < lines.len() {
@@ -50,5 +50,5 @@ pub fn part2(input: String) {
 			println!("so far: {}", lines.len());
 		}
 	}
-	println!("{}", lines.len());
+	return lines.len();
 }

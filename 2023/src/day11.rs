@@ -53,7 +53,7 @@ fn find_galaxies(universe: &Vec<Vec<char>>, empty_rows: Vec<i64>, empty_columns:
 	return result;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i64 {
 	let universe = parse(input);
 	let (empty_rows, empty_columns) = find_empty(&universe);
 	let galaxies = find_galaxies(&universe, empty_rows, empty_columns, 2);
@@ -67,10 +67,10 @@ pub fn part1(input: String) {
 			sum += distance;
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i64 {
 	let universe = parse(input);
 	let (empty_rows, empty_columns) = find_empty(&universe);
 	let galaxies = find_galaxies(&universe, empty_rows, empty_columns, 1000000);
@@ -84,5 +84,5 @@ pub fn part2(input: String) {
 			sum += distance;
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }

@@ -16,7 +16,7 @@ pub fn is_symbol(c: &char) -> bool {
 	!c.is_digit(10) && *c != '.'
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let mut sum = 0;
 	let grid = to_grid(input);
 	for (line_nr, line) in grid.iter().enumerate() {
@@ -61,7 +61,7 @@ pub fn part1(input: String) {
 			sum += part_nr;
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }
 
 fn register_gear(partial_gears: &mut HashMap<(i32, i32), i32>, sum: &mut i32, x: i32, y: i32, part_nr: i32) {
@@ -73,7 +73,7 @@ fn register_gear(partial_gears: &mut HashMap<(i32, i32), i32>, sum: &mut i32, x:
 	}
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i32 {
 	let mut sum = 0;
 	let mut partial_gears: HashMap<(i32, i32), i32> = HashMap::new();
 	let grid = to_grid(input);
@@ -145,5 +145,5 @@ pub fn part2(input: String) {
 			register_gear(&mut partial_gears, &mut sum, x, y, part_nr);
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }

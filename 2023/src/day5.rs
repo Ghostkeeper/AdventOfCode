@@ -50,7 +50,7 @@ fn parse_map(input: String, name: &str) -> HashMap<Range<i64>, i64> {
     return result;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i64 {
     let seeds = parse_seeds(input.clone());
     let maps = [
         parse_map(input.clone(), "seed-to-soil"),
@@ -75,10 +75,10 @@ pub fn part1(input: String) {
         }
         lowest = lowest.min(current);
     }
-    println!("Lowest location ID: {}", lowest);
+    return lowest;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i64 {
     let seeds = parse_seed_ranges(input.clone());
     let maps = [
         parse_map(input.clone(), "seed-to-soil"),
@@ -106,5 +106,5 @@ pub fn part2(input: String) {
             lowest = lowest.min(current);
         }
     }
-    println!("Lowest location ID: {}", lowest);
+    return lowest;
 }

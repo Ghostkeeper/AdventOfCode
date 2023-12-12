@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use regex::Regex;
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let mut sum = 0;
 	let re = Regex::new(r"[^0-9]").unwrap();
 	for line in input.split("\n") {
@@ -10,10 +10,10 @@ pub fn part1(input: String) {
 		let last = filtered.chars().last().unwrap() as i32 - 48;
 		sum += first * 10 + last;
 	}
-	println!("{}", sum);
+	return sum
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i32 {
 	let replacement = HashMap::from([
 		("one", 1),
 		("1", 1),
@@ -63,5 +63,5 @@ pub fn part2(input: String) {
 		sum += first * 10 + last;
 		println!("{}  {}", line, first * 10 + last);
 	}
-	println!("{}", sum);
+	return sum;
 }

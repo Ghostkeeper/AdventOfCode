@@ -40,7 +40,7 @@ fn parse(input: String) -> Vec<Game> {
 	return result;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> u32 {
 	let games = parse(input);
 	let mut sum = 0;
 	for game in games {
@@ -48,14 +48,14 @@ pub fn part1(input: String) {
 			sum += game.id;
 		}
 	}
-	println!("{}", sum);
+	return sum;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> u32 {
 	let games = parse(input);
 	let mut sum = 0;
 	for game in games {
 		sum += game.reds * game.greens * game.blues;
 	}
-	println!("{}", sum);
+	return sum;
 }

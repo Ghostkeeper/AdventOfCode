@@ -142,14 +142,14 @@ fn is_inside(grid: &Vec<Vec<char>>, position: (usize, usize)) -> bool {
 	return num_borders % 2 == 1;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> i32 {
 	let grid = parse(input);
 	let start = find_start(&grid);
 	let loop_size = follow(&grid, start, Direction::SOUTH);
-	println!("{}", loop_size / 2);
+	return loop_size / 2;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> i32 {
 	let grid = parse(input);
 	let start = find_start(&grid);
 	let marked = mark_loop(&grid, start, Direction::SOUTH);
@@ -164,5 +164,5 @@ pub fn part2(input: String) {
 			}
 		}
 	}
-	println!("{}", area);
+	return area;
 }

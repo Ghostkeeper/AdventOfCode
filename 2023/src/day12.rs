@@ -86,7 +86,7 @@ fn num_valid(field: &[u8], sequence: &Vec<i32>, mut pos: usize, next: char, cach
 	}
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> usize {
 	let (fields, sequences) = parse(input);
 	let mut sum_arrangements = 0;
 	for i in 0..fields.len() {
@@ -94,10 +94,10 @@ pub fn part1(input: String) {
 		let num = num_valid(fields[i].as_bytes(), &sequences[i], 0, '?', &mut cache);
 		sum_arrangements += num;
 	}
-	println!("{}", sum_arrangements);
+	return sum_arrangements;
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> usize {
 	let (fields, sequences) = parse(input);
 	let mut sum_arrangements = 0;
 	for i in 0..fields.len() {
@@ -112,5 +112,5 @@ pub fn part2(input: String) {
 		let num = num_valid(multiplied_field.as_bytes(), &multiplied_sequence, 0, '?', &mut cache);
 		sum_arrangements += num;
 	}
-	println!("{}", sum_arrangements);
+	return sum_arrangements;
 }

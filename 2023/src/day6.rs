@@ -16,7 +16,7 @@ fn dist(time: i64, hold: i64) -> i64 {
     return (time - hold) * hold;
 }
 
-pub fn part1(input: String) {
+pub fn part1(input: String) -> usize {
     let (time, space) = parse(input);
 
     let mut results = vec!(0; time.len());
@@ -33,7 +33,7 @@ pub fn part1(input: String) {
     for wins in results {
         result *= wins;
     }
-    println!("{}", result);
+    return result;
 }
 
 fn parse_dumb(input: String) -> (i64, i64) {
@@ -50,7 +50,7 @@ fn parse_dumb(input: String) -> (i64, i64) {
     return (time, space);
 }
 
-pub fn part2(input: String) {
+pub fn part2(input: String) -> usize {
     let (time, space) = parse_dumb(input);
 
     let mut num_win = 0usize;
@@ -59,5 +59,5 @@ pub fn part2(input: String) {
             num_win += 1;
         }
     }
-    println!("{}", num_win);
+    return num_win;
 }
