@@ -41,9 +41,12 @@ fn is_valid(field: &Vec<char>, sequence: &Vec<i32>) -> bool {
 
 fn num_valid(field: &Vec<char>, sequence: &Vec<i32>) -> usize {
 	let num_unknown = field.iter().filter(|c| **c == '?').count();
-	println!("-- num_unknown: {}", num_unknown);
+	let num_damaged_known = field.iter().filter(|c| **c == '#').count();
+	let num_damaged = sequence.iter().sum::<i32>() as u32;
+	let num_damaged_unknown: u32 = num_damaged - (num_damaged_known as u32);
 	let mut valid = 0usize;
-	for bitfield in 0usize..(1 << num_unknown) {
+	let mut bitfield = 2usize.pow(num_damaged_unknown) - 1;
+	while bitfield <= 2usize.pow(num_damaged_unknown) - 1 << (num_unknown - num_damaged_unknown as usize) {
 		let mut filled_in = field.clone();
 		let mut bit = 0;
 		for (pos, char) in field.iter().enumerate() {
@@ -59,6 +62,10 @@ fn num_valid(field: &Vec<char>, sequence: &Vec<i32>) -> usize {
 		if is_valid(&filled_in, sequence) {
 			valid += 1;
 		}
+
+		//From https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation
+		let t = bitfield | (bitfield - 1);
+		bitfield = (t + 1) | (((!t & -(!t as i32) as usize) - 1) >> (bitfield.trailing_zeros() + 1));
 	}
 	return valid;
 }
@@ -70,7 +77,7 @@ pub fn part1(input: String) {
 		let num = num_valid(&fields[i], &sequences[i]);
 		sum_arrangements += num;
 	}
-	println!("{}", sum_arrangements)
+	println!("{}", sum_arrangements);
 }
 
 pub fn part2(input: String) {
@@ -86,5 +93,5 @@ pub fn part2(input: String) {
 		let num = num_valid(&multiplied_field, &multiplied_sequence);
 		sum_arrangements += num;
 	}
-	println!("{}", sum_arrangements)
+	println!("{}", sum_arrangements);
 }
