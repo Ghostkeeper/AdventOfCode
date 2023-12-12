@@ -12,64 +12,57 @@ fn parse(input: String) -> (Vec<String>, Vec<Vec<i32>>) {
 	return (fields, sequences);
 }
 
-fn is_valid(field: &[u8], sequence: &Vec<i32>) -> bool {
-	let mut pos = 0usize;
-	for streak in sequence {
-		//Find when the streak starts.
-		while pos < field.len() && field[pos] == '.' as u8 {
-			pos += 1;
+fn num_valid(field: &[u8], sequence: &Vec<i32>, mut pos: usize, next: char) -> usize {
+	if sequence.len() == 0 {
+		if pos >= field.len() {
+			return 1; //Both sequence and field are matched, so this could be a possibility.
 		}
-		//Find this streak's length.
-		let mut length = 0;
-		while pos < field.len() && field[pos] == '#' as u8 {
-			length += 1;
-			pos += 1;
-		}
-		if length != *streak {
-			return false; //Streak is too short.
-		}
-	}
-	//Find if there are any more streaks after the last.
-	while pos < field.len() {
 		if field[pos] == '#' as u8 {
-			return false; //Too many streaks.
+			return 0; //No sequence left, but there are # left.
+		} else {
+			return num_valid(field, sequence, pos + 1, '?'); //Turn all ? into ., and hope there's only . left.
 		}
-		pos += 1;
 	}
-	return true;
-}
-
-fn num_valid(field: &[u8], sequence: &Vec<i32>) -> usize {
-	let num_unknown = field.iter().filter(|c| **c == '?' as u8).count();
-	let num_damaged_known = field.iter().filter(|c| **c == '#' as u8).count();
-	let num_damaged = sequence.iter().sum::<i32>() as u32;
-	let num_damaged_unknown: u32 = num_damaged - (num_damaged_known as u32);
-	let mut valid = 0usize;
-	let mut bitfield = 2usize.pow(num_damaged_unknown) - 1;
-	while bitfield <= 2usize.pow(num_damaged_unknown) - 1 << (num_unknown - num_damaged_unknown as usize) {
-		let mut filled_in = String::new();
-		let mut bit = 0;
-		for c in field {
-			if *c == '?' as u8 {
-				if bitfield & (1 << bit) > 0 {
-					filled_in.push('#');
-				} else {
-					filled_in.push('.');
-				}
-				bit += 1;
+	if pos >= field.len() {
+		return 0; //Still have sequence left, but no field left.
+	}
+	if next == '.' && field[pos] == '#' as u8 {
+		return 0; //Must start with ..
+	}
+	if next == '#' && field[pos] == '.' as u8 {
+		return 0; //Must start with #.
+	}
+	match field[pos] as char {
+		'.' => num_valid(field, sequence, pos + 1, '?'),
+		'#' => {
+			let mut modified_sequence = sequence.clone();
+			modified_sequence[0] -= 1;
+			if modified_sequence[0] == 0 {
+				modified_sequence.remove(0);
+				return num_valid(field, &modified_sequence, pos + 1, '.');
 			} else {
-				filled_in.push(*c as char);
+				return num_valid(field, &modified_sequence, pos + 1, '#');
 			}
 		}
-		if is_valid(&filled_in.as_bytes(), sequence) {
-			valid += 1;
+		'?' => {
+			let mut possibilities = 0;
+			if next != '#' {
+				possibilities += num_valid(field, sequence, pos + 1, '?');
+			}
+			if next != '.' {
+				let mut modified_sequence = sequence.clone();
+				modified_sequence[0] -= 1;
+				if modified_sequence[0] == 0 {
+					modified_sequence.remove(0);
+					possibilities += num_valid(field, &modified_sequence, pos + 1, '.');
+				} else {
+					possibilities += num_valid(field, &modified_sequence, pos + 1, '#');
+				}
+			}
+			return possibilities;
 		}
-
-		//From https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation
-		let t = bitfield | (bitfield - 1);
-		bitfield = (t + 1) | (((!t & -(!t as i32) as usize) - 1) >> (bitfield.trailing_zeros() + 1));
+		_ => panic!("Unknown character in field.")
 	}
-	return valid;
 }
 
 pub fn part1(input: String) {
