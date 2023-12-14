@@ -1,3 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
 fn parse(input: String) -> (Vec<Vec<bool>>, Vec<(i32, i32)>) {
     let mut rocks = vec!();
     let mut grid = vec!();
@@ -19,7 +22,7 @@ fn parse(input: String) -> (Vec<Vec<bool>>, Vec<(i32, i32)>) {
 }
 
 fn tilt(grid: &Vec<Vec<bool>>, rocks: &mut Vec<(i32, i32)>, direction: (i32, i32)) {
-    rocks.sort_unstable_by(|l, r| if direction.0 != 0 { l.0.cmp(&(r.0 * direction.0)) } else { l.1.cmp(&(r.1 * direction.1)) });
+    rocks.sort_by_key(|rock| (rock.0 * -1 * direction.0, rock.1 * -1 * direction.1));
     let mut blocked = vec!();
     for rock in rocks.iter_mut() {
         if true
@@ -49,24 +52,44 @@ pub fn part1(input: String) -> i32 {
     return sum;
 }
 
+fn rumble(grid: &Vec<Vec<bool>>, rocks: &mut Vec<(i32, i32)>) {
+    for _ in 0..grid.len() { //Tilt North.
+        tilt(&grid, rocks, (0, -1));
+    }
+    for _ in 0..grid[0].len() { //Tilt West.
+        tilt(&grid, rocks, (-1, 0));
+    }
+    for _ in 0..grid.len() { //Tilt South.
+        tilt(&grid, rocks, (0, 1));
+    }
+    for _ in 0..grid[0].len() { //Tilt East.
+        tilt(&grid, rocks, (1, 0));
+    }
+}
+
 pub fn part2(input: String) -> i32 {
     let (grid, mut rocks) = parse(input);
-    for cycle in 0..1000000000 {
-        for _ in 0..grid.len() { //Tilt North.
-            tilt(&grid, &mut rocks, (0, -1));
+    let mut hashes = vec!();
+    for rumbling in 0..1000000000 {
+        rumble(&grid, &mut rocks);
+        let mut hasher = DefaultHasher::new();
+        rocks.hash(&mut hasher);
+        let hash = hasher.finish();
+        let position = hashes.iter().position(|&h| h == hash);
+        if position.is_some() {
+            let cycle_start = position.unwrap();
+            let cycle_length = rumbling - cycle_start;
+            let leftover = (1000000000 - cycle_start) % cycle_length - 1;
+            for _ in 0..leftover {
+                rumble(&grid, &mut rocks);
+            }
+            let mut sum = 0;
+            for rock in rocks {
+                sum += grid.len() as i32 - rock.1;
+            }
+            return sum;
         }
-        for _ in 0..grid[0].len() { //Tilt West.
-            tilt(&grid, &mut rocks, (-1, 0));
-        }
-        for _ in 0..grid.len() { //Tilt South.
-            tilt(&grid, &mut rocks, (0, 1));
-        }
-        for _ in 0..grid[0].len() { //Tilt East.
-            tilt(&grid, &mut rocks, (1, 0));
-        }
-        if cycle % 1000000 == 0 {
-            println!("{}", cycle);
-        }
+        hashes.push(hash);
     }
     let mut sum = 0;
     for rock in rocks {
