@@ -48,3 +48,29 @@ pub fn part1(input: String) -> i32 {
     }
     return sum;
 }
+
+pub fn part2(input: String) -> i32 {
+    let (grid, mut rocks) = parse(input);
+    for cycle in 0..1000000000 {
+        for _ in 0..grid.len() { //Tilt North.
+            tilt(&grid, &mut rocks, (0, -1));
+        }
+        for _ in 0..grid[0].len() { //Tilt West.
+            tilt(&grid, &mut rocks, (-1, 0));
+        }
+        for _ in 0..grid.len() { //Tilt South.
+            tilt(&grid, &mut rocks, (0, 1));
+        }
+        for _ in 0..grid[0].len() { //Tilt East.
+            tilt(&grid, &mut rocks, (1, 0));
+        }
+        if cycle % 1000000 == 0 {
+            println!("{}", cycle);
+        }
+    }
+    let mut sum = 0;
+    for rock in rocks {
+        sum += grid.len() as i32 - rock.1;
+    }
+    return sum;
+}
