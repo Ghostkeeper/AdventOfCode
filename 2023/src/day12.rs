@@ -13,7 +13,7 @@ fn parse(input: String) -> (Vec<String>, Vec<Vec<i32>>) {
 	return (fields, sequences);
 }
 
-fn num_valid(field: &[u8], sequence: &Vec<i32>, mut pos: usize, next: char, cache: &mut HashMap<(Vec<i32>, usize, char), usize>) -> usize {
+fn num_valid(field: &[u8], sequence: &Vec<i32>, pos: usize, next: char, cache: &mut HashMap<(Vec<i32>, usize, char), usize>) -> usize {
 	let key = (sequence.clone(), pos, next);
 	if cache.contains_key(&key) {
 		return *cache.get(&key).unwrap();

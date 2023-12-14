@@ -71,7 +71,7 @@ pub fn part1(input: String) -> usize {
 }
 
 pub fn part2(input: String) -> usize {
-    let mut fields = parse(input);
+    let fields = parse(input);
     let mut sum = 0;
     for mut field in fields {
         sum += find_reflection(&mut field, 1);

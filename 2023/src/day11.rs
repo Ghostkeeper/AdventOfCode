@@ -9,7 +9,7 @@ fn parse(input: String) -> Vec<Vec<char>> {
 	return result;
 }
 
-fn find_empty(mut universe: &Vec<Vec<char>>) -> (Vec<i64>, Vec<i64>) {
+fn find_empty(universe: &Vec<Vec<char>>) -> (Vec<i64>, Vec<i64>) {
 	let mut empty_rows = vec!();
 	let mut empty_columns = vec!();
 
