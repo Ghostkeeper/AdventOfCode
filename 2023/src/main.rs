@@ -16,9 +16,10 @@ mod day11;
 mod day12;
 mod day13;
 mod day14;
+mod day15;
 
 fn main() {
-	let contents = fs::read_to_string("inputs/day14_1.txt").expect("File should exist.");
-	let answer = day14::part2(contents);
+	let contents = fs::read_to_string("inputs/day15_1.txt").expect("File should exist.");
+	let answer = day15::part1(contents);
 	println!("ANSWER: {}", answer);
 }
