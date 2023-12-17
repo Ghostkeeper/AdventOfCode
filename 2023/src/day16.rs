@@ -25,8 +25,7 @@ fn in_bounds(head: (usize, usize, usize), delta: (i32, i32), grid: &Vec<Vec<char
 		&& ((head.1 as i32 + delta.1) as usize) < grid.len()
 }
 
-pub fn part1(input: String) -> u32 {
-	let grid = parse(input);
+fn shine_light(grid: &Vec<Vec<char>>, start: (usize, usize, usize)) -> u32 {
 	let mut is_lit = vec!();
 	for line in grid.iter() {
 		is_lit.push(vec!());
@@ -34,7 +33,7 @@ pub fn part1(input: String) -> u32 {
 			is_lit.last_mut().unwrap().push([false, false, false, false]);
 		}
 	}
-	let mut beam_heads = vec!((0, 0, 0));
+	let mut beam_heads = vec!(start);
 	while beam_heads.len() > 0 {
 		let head = beam_heads.pop().unwrap();
 		if is_lit[head.1][head.0][head.2] { //Was already lit. Don't go into infinite loops.
@@ -126,4 +125,25 @@ pub fn part1(input: String) -> u32 {
 		}
 	}
 	return count;
+}
+
+pub fn part1(input: String) -> u32 {
+	let grid = parse(input);
+	return shine_light(&grid, (0, 0, 0));
+}
+
+pub fn part2(input: String) -> u32 {
+	let grid = parse(input);
+	let mut highest = 0;
+	for y in 0..grid.len() {
+		let from_left = shine_light(&grid, (0, y, 0));
+		let from_right = shine_light(&grid, (grid[0].len() - 1, y, 2));
+		highest = highest.max(from_left).max(from_right);
+	}
+	for x in 0..grid[0].len() {
+		let from_top = shine_light(&grid, (x, 0, 3));
+		let from_bottom = shine_light(&grid, (x, grid.len() - 1, 1));
+		highest = highest.max(from_top).max(from_bottom);
+	}
+	return highest;
 }
