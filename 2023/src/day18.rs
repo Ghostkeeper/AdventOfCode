@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-
-fn execute(grid: &mut HashSet<(i32, i32)>, pos: &mut (i32, i32), command: &str) {
+fn execute(command: &str, verts: &mut Vec<(i32, i32)>) {
     let mut parts = command.split_whitespace();
     let direction = parts.next().unwrap();
     let distance = parts.next().unwrap().parse::<i32>().unwrap();
@@ -11,67 +9,33 @@ fn execute(grid: &mut HashSet<(i32, i32)>, pos: &mut (i32, i32), command: &str) 
         "D" => (0, 1),
         _ => panic!("Unknown direction!"),
     };
-    for _ in 0..distance {
-        pos.0 += delta.0;
-        pos.1 += delta.1;
-        grid.insert(*pos);
-    }
+    let prev = verts.last().unwrap();
+    let new = (prev.0 + delta.0 * distance, prev.1 + delta.1 * distance);
+    verts.push(new);
 }
 
-fn floodfill(grid: &mut HashSet<(i32, i32)>) {
-    let mut max = (0, 0);
-    let mut min = (0, 0);
-    for (x, y) in grid.iter() {
-        max.0 = max.0.max(*x);
-        max.1 = max.1.max(*y);
-        min.0 = min.0.min(*x);
-        min.1 = min.1.min(*y);
+fn area(verts: &Vec<(i32, i32)>) -> i64 {
+    let mut sum = 0i64;
+    for i in 0..verts.len() {
+        sum += (verts[i].0 * verts[(i + 1) % verts.len()].1 - verts[i].1 * verts[(i + 1) % verts.len()].0) as i64;
     }
-    max.0 += 1; //Add a border so that we're sure that the outside is outside.
-    max.1 += 1;
-    min.0 -= 1;
-    min.1 -= 1;
-    let mut outside = HashSet::new();
-    let mut todo = vec![(0, 0)];
-    while !todo.is_empty() {
-        let next = todo.pop().unwrap();
-        let candidates = [
-            (next.0 + 1, next.1),
-            (next.0, next.1 - 1),
-            (next.0 - 1, next.1),
-            (next.0, next.1 + 1),
-        ];
-        for candidate in candidates {
-            if candidate.0 < min.0 || candidate.0 > max.0 || candidate.1 < min.1 || candidate.1 > max.1 {
-                continue; //Out of bounds.
-            }
-            if grid.contains(&candidate) {
-                continue; //Part of the border. Don't cross!
-            }
-            if outside.contains(&candidate) {
-                continue; //Already processed this one.
-            }
-            outside.insert(candidate);
-            todo.push(candidate);
-        }
-    }
-    //Anything that's not outside is inside.
-    //The border will again be re-added, but since it's a set that doesn't matter.
-    for x in min.0..max.0 {
-        for y in min.1..max.1 {
-            if !outside.contains(&(x, y)) {
-                grid.insert((x, y));
-            }
-        }
-    }
+    return sum.abs() / 2;
 }
 
-pub fn part1(input: String) -> usize {
-    let mut grid = HashSet::new();
-    let mut pos = (0, 0);
+fn length(verts: &Vec<(i32, i32)>) -> i64 {
+    let mut sum = 0i64;
+    for i in 0..verts.len() {
+        //Just do Manhattan distance. There are no diagonals anyway.
+        sum += (verts[i].0 - verts[(i + 1) % verts.len()].0).abs() as i64;
+        sum += (verts[i].1 - verts[(i + 1) % verts.len()].1).abs() as i64;
+    }
+    return sum;
+}
+
+pub fn part1(input: String) -> i64 {
+    let mut verts = vec![(0, 0)];
     for command in input.split("\n") {
-        execute(&mut grid, &mut pos, command);
+        execute(command, &mut verts);
     }
-    floodfill(&mut grid);
-    return grid.len();
+    return area(&verts) + length(&verts) / 2 + 1;
 }
