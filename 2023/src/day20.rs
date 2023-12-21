@@ -137,7 +137,7 @@ pub fn part2(input: String) -> u128 {
 	};
 	let mut queue: VecDeque<(String, bool, String)> = VecDeque::new();
 	let mut i = 0;
-	let mut to_see = vec!["sk", "sd", "pl", "zv"]; //Hard-coded, but... These are the 4 nodes that need to trigger a low pulse simultaneously.
+	let to_see = vec!["sk", "sd", "pl", "zv"]; //Hard-coded, but... These are the 4 nodes that need to trigger a low pulse simultaneously.
 	let mut loop_size = HashMap::new();
 	loop {
 		queue.push_back(("button".to_string(), false, "broadcaster".to_string()));
