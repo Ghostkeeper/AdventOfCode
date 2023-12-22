@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[derive(Debug, Clone)]
 struct Brick {
 	x: u16,
@@ -6,8 +8,8 @@ struct Brick {
 	w: u16,
 	h: u16,
 	d: u16,
-	supports: Vec<usize>,
-	supported_by: Vec<usize>,
+	supports: HashSet<usize>,
+	supported_by: HashSet<usize>,
 }
 
 impl Brick {
@@ -27,7 +29,11 @@ impl Brick {
 	}
 
 	pub fn supported_without(&self, brick_id: usize) -> bool {
-		self.supported_by.len() != 1 || self.supported_by[0] != brick_id
+		self.supported_by.len() != 1 || !self.supported_by.contains(&brick_id)
+	}
+
+	pub fn supported_without_any(&self, brick_ids: &HashSet<usize>) -> bool {
+		return self.z == 1 || !self.supported_by.is_subset(brick_ids);
 	}
 }
 
@@ -51,19 +57,15 @@ fn parse(input: String) -> Vec<Brick> {
 			w: end[0] - start[0] + 1,
 			h: end[1] - start[1] + 1,
 			d: end[2] - start[2] + 1,
-			supports: vec!(),
-			supported_by: vec!(),
+			supports: HashSet::new(),
+			supported_by: HashSet::new(),
 		});
 	}
 
 	return result;
 }
 
-pub fn part1(input: String) -> u32 {
-	let mut bricks = parse(input);
-	bricks.sort_unstable_by(|b1, b2| b1.z.cmp(&b2.z)); //Sort by Z.
-
-	//Drop the bricks.
+fn drop_bricks(bricks: &mut Vec<Brick>) {
 	for (dropped_id, brick) in bricks.clone().iter().enumerate() {
 		let mut dropped_brick = brick.clone();
 		for z in (1..brick.z).rev() {
@@ -72,8 +74,8 @@ pub fn part1(input: String) -> u32 {
 			for collides_id in (0..dropped_id).rev() {
 				if dropped_brick.collides_brick(&bricks[collides_id]) {
 					bricks[dropped_id].z = z + 1;
-					bricks[collides_id].supports.push(dropped_id);
-					bricks[dropped_id].supported_by.push(collides_id);
+					bricks[collides_id].supports.insert(dropped_id);
+					bricks[dropped_id].supported_by.insert(collides_id);
 					resting = true;
 				}
 			}
@@ -85,12 +87,48 @@ pub fn part1(input: String) -> u32 {
 			}
 		}
 	}
+}
+
+pub fn part1(input: String) -> u32 {
+	let mut bricks = parse(input);
+	bricks.sort_unstable_by(|b1, b2| b1.z.cmp(&b2.z)); //Sort by Z.
+
+	drop_bricks(&mut bricks);
 
 	let mut disintegrate_count = 0;
-	for (disintegrate_id, _brick) in bricks.iter().enumerate() {
+	for disintegrate_id in 0..bricks.len() {
 		if bricks.iter().all(|b| b.supported_without(disintegrate_id)) {
 			disintegrate_count += 1;
 		}
 	}
 	return disintegrate_count;
+}
+
+pub fn part2(input: String) -> usize {
+	let mut bricks = parse(input);
+	bricks.sort_unstable_by(|b1, b2| b1.z.cmp(&b2.z)); //Sort by Z.
+
+	drop_bricks(&mut bricks);
+
+	let mut fall_count = 0;
+	for disintegrate_id in 0..bricks.len() {
+		let mut falling = HashSet::new();
+		falling.insert(disintegrate_id);
+		let mut cascading = true;
+		while cascading {
+			cascading = false;
+			for (brick_id, brick) in bricks.iter().enumerate() {
+				if falling.contains(&brick_id) {
+					continue;
+				}
+				if !brick.supported_without_any(&falling) {
+					falling.insert(brick_id);
+					cascading = true;
+				}
+			}
+		}
+		fall_count += falling.len() - 1;
+	}
+
+	return fall_count;
 }
