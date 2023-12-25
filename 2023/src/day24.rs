@@ -36,6 +36,10 @@ fn intersect_line_2d(line1: (i128, i128, i128, i128, i128, i128), line2: (i128, 
 	let starts_delta = (line1.0 - line2.0, line1.1 - line2.1);
 	let line1_parametric = cross_product((line2.3, line2.4), starts_delta);
 	let line2_parametric = cross_product((line1.3, line1.4), starts_delta);
+	let upper = 0.max(divisor);
+	if line1_parametric > upper || line2_parametric > upper {
+		return (i128::MIN, i128::MIN);
+	}
 	return (line1.0 + round_divide(line1_parametric * line1.3, divisor), line1.1 + round_divide(line1_parametric * line1.4, divisor));
 }
 
@@ -46,9 +50,8 @@ pub fn part1(input: String) -> usize {
 	let mut count = 0;
 	for hail_id1 in 0..hails.len() {
 		for hail_id2 in 0..hail_id1 {
-			let intersection = intersect_line_2d(hails[hail_id1], hails[hail_id2]);
-			println!("Lines {:?} x {:?} intersect at {:?}", hails[hail_id1], hails[hail_id2], intersection);
-			if intersection.0 >= 7 && intersection.0 <= 27 && intersection.1 >= 7 && intersection.1 <= 27 {
+			let intersection = intersect_line_2d(hails[hail_id2], hails[hail_id1]);
+			if intersection.0 >= 200000000000000 && intersection.0 <= 400000000000000 && intersection.1 >= 200000000000000 && intersection.1 <= 400000000000000 {
 				count += 1;
 			}
 		}
