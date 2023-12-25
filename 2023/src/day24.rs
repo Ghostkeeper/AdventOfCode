@@ -16,42 +16,37 @@ fn parse(input: String) -> Vec<(i128, i128, i128, i128, i128, i128)> {
 	return hails;
 }
 
-fn cross_product(a: (i128, i128), b: (i128, i128)) -> i128 {
-	a.0 * b.1 - a.1 * b.0
-}
-
-fn round_divide(numerator: i128, denominator: i128) -> i128 {
-	if (numerator < 0) ^ (denominator < 0) {
-		(numerator - denominator / 2) / denominator
-	} else {
-		(numerator + denominator / 2) / denominator
-	}
-}
-
 fn intersect_line_2d(line1: (i128, i128, i128, i128, i128, i128), line2: (i128, i128, i128, i128, i128, i128)) -> (i128, i128) {
-	let divisor = cross_product((line1.3, line1.4), (line2.3, line2.4));
-	if divisor == 0 { //They don't intersect.
-		return (i128::MIN, i128::MIN);
+	let a1 = line1.4;
+	let a2 = line2.4;
+	let b1 = -line1.3;
+	let b2 = -line2.3;
+	let c1 = line1.4 * line1.0 - line1.3 * line1.1;
+	let c2 = line2.4 * line2.0 - line2.3 * line2.1;
+	if a1 * b2 == b1 * a2 {
+		return (i128::MIN, i128::MIN); //Parallel.
 	}
-	let starts_delta = (line1.0 - line2.0, line1.1 - line2.1);
-	let line1_parametric = cross_product((line2.3, line2.4), starts_delta);
-	let line2_parametric = cross_product((line1.3, line1.4), starts_delta);
-	let upper = 0.max(divisor);
-	if line1_parametric > upper || line2_parametric > upper {
-		return (i128::MIN, i128::MIN);
+	let x = (b2 * c1 - b1 * c2) / (a1 * b2 - b1 * a2);
+	let y = (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1);
+	if (x - line1.0 < 0) == (line1.3 < 0)
+		&& (y - line1.1 < 0) == (line1.4 < 0)
+		&& (x - line2.0 < 0) == (line2.3 < 0)
+		&& (y - line2.1 < 0) == (line2.4 < 0) {
+		return (x, y);
+	} else {
+		return (i128::MIN, i128::MIN); //In the past.
 	}
-	return (line1.0 + round_divide(line1_parametric * line1.3, divisor), line1.1 + round_divide(line1_parametric * line1.4, divisor));
 }
 
 pub fn part1(input: String) -> usize {
 	let hails = parse(input);
-	println!("HAILS: {:?}", hails);
 
 	let mut count = 0;
 	for hail_id1 in 0..hails.len() {
 		for hail_id2 in 0..hail_id1 {
-			let intersection = intersect_line_2d(hails[hail_id2], hails[hail_id1]);
+			let intersection = intersect_line_2d(hails[hail_id1], hails[hail_id2]);
 			if intersection.0 >= 200000000000000 && intersection.0 <= 400000000000000 && intersection.1 >= 200000000000000 && intersection.1 <= 400000000000000 {
+			//if intersection.0 >= 7 && intersection.0 <= 27 && intersection.1 >= 7 && intersection.1 <= 27 {
 				count += 1;
 			}
 		}
