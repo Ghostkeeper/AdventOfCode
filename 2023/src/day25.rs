@@ -80,21 +80,17 @@ fn cut(nodes: &Vec<Node>, cut_edges: [(usize, usize); 3]) -> usize {
 pub fn part1(input: String) -> usize {
 	let (nodes, edges) = parse(input);
 
-	println!("Edges len: {}", edges.len());
-	let n = edges.len() as u64;
-	(0..edges.len()).into_par_iter().for_each(|i| {
-		println!("{}", i);
+	let result: usize = (0..edges.len()).into_par_iter().map(|i| {
 		for j in 0..i {
 			for k in 0..j {
 				let cut_edges = [edges[i], edges[j], edges[k]];
 				let part_size = cut(&nodes, cut_edges);
 				if part_size < nodes.len() {
-					println!("Part size: {} out of {}", part_size, nodes.len());
-					println!("Cutting edges: {:?}", cut_edges);
-					println!("Result: {}", part_size * (nodes.len() - part_size));
+					return part_size * (nodes.len() - part_size);
 				}
 			}
 		}
-	});
-	panic!("No 3-cut found!");
+		return 0;
+	}).sum();
+	return result;
 }
