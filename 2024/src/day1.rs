@@ -22,3 +22,16 @@ pub fn part1(input: String) -> i32 {
 	}
 	return result;
 }
+
+pub fn part2(input: String) -> i32 {
+	let (left, right) = parse(input);
+	//They probably want me to sort the lists and iterate over it linearly.
+	//But with the power of Rust we can do it quadratically. Like a real programmer.
+
+	let mut similarity_score = 0;
+	for l in left {
+		let occurrences = right.iter().filter(|&r| *r == l).count() as i32;
+		similarity_score += l * occurrences;
+	}
+	return similarity_score;
+}
