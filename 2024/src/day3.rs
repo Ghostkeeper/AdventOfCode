@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use regex::Regex;
+use regex::{Regex, RegexBuilder};
 
 pub fn part1(input: String) -> u32 {
 	let re = Regex::new(r"mul\((?<a>\d{1,3}),(?<b>\d{1,3})\)").unwrap();
@@ -14,4 +14,11 @@ pub fn part1(input: String) -> u32 {
 		sum += a * b;
 	}
 	return sum;
+}
+
+pub fn part2(input: String) -> u32 {
+	let ignore_re = RegexBuilder::new(r"don't\(\).*?do\(\)").multi_line(true).dot_matches_new_line(true).build().unwrap();
+	//Edge case: If input ends after don't() then the last part wouldn't get erased unless we add another do().
+	let filtered = String::from(ignore_re.replace_all((input + "do()").as_str(), ""));
+	return part1(filtered);
 }
