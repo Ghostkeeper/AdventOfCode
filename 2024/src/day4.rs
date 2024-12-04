@@ -38,3 +38,31 @@ pub fn part1(input: String) -> u32 {
 	}
 	return count;
 }
+
+pub fn part2(input: String) -> u32 {
+	let grid = parse(input);
+	let directions: [[i32; 2]; 4] = [[1, 1], [-1, 1], [-1, -1], [1, -1]];
+
+	let mut count = 0;
+	for y in 1..grid.len() - 1 {
+		for x in 1..grid[y].len() - 1 {
+			if grid[y][x] != 'A' {
+				continue;
+			}
+			let mut num_mas = 0;
+			for d in directions {
+				let mx = (x as i32 + d[0]) as usize;
+				let my = (y as i32 + d[1]) as usize;
+				let sx = (x as i32 - d[0]) as usize;
+				let sy = (y as i32 - d[1]) as usize;
+				if grid[my][mx] == 'M' && grid[sy][sx] == 'S' {
+					num_mas += 1;
+				}
+			}
+			if num_mas == 2 {
+				count += 1;
+			}
+		}
+	}
+	return count;
+}
