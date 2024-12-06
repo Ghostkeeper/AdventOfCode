@@ -41,3 +41,39 @@ pub fn part1(input: String) -> u32 {
 		}
 	}
 }
+
+pub fn part2(input: String) -> u32 {
+	let mut result = 0;
+
+	let (original_grid, start_pos, start_dir) = parse(input);
+	for obs_y in 0..original_grid.len() {
+		for obs_x in 0..original_grid[0].len() {
+			let mut grid = original_grid.clone();
+			if (obs_x, obs_y) == start_pos {
+				continue; //Not allowed to obstruct the starting position.
+			}
+			let mut pos = start_pos;
+			let mut dir = start_dir;
+			grid[obs_y][obs_x] = '#';
+			//Now let's simulate to see if we get in a loop.
+			let mut visited = HashSet::new();
+			loop {
+				if visited.contains(&(pos, dir)) { //Been here before. This was a loop!
+					result += 1;
+					break;
+				}
+				visited.insert((pos, dir));
+				let new_pos = ((pos.0 as i32 + dir.0) as usize, ((pos.1 as i32) + dir.1) as usize);
+				if new_pos.0 >= grid[0].len() || new_pos.1 >= grid[0].len() { //Out of bounds. Didn't loop.
+					break;
+				} else if grid[new_pos.1][new_pos.0] == '#' { //Obstructed.
+					dir = (-dir.1, dir.0); //Rotate right.
+				} else { //Not obstructed.
+					pos = new_pos;
+				}
+			}
+		}
+	}
+
+	return result;
+}
