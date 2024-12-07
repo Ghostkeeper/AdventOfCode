@@ -41,3 +41,35 @@ pub fn part1(input: String) -> i64 {
 
 	return result;
 }
+
+fn is_equatable_concat(numbers: &Vec<i64>, computation: i64, position: usize, answer: i64) -> bool {
+	let computation_mul = computation * numbers[position];
+	let computation_add = computation + numbers[position];
+	let computation_con = format!("{}{}", computation, numbers[position]).parse::<i64>().unwrap();
+	if position == numbers.len() - 1 {
+		if computation_mul == answer {
+			return true;
+		} else if computation_add == answer {
+			return true;
+		} else if computation_con == answer {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return is_equatable_concat(numbers, computation_mul, position + 1, answer) || is_equatable_concat(numbers, computation_add, position + 1, answer) || is_equatable_concat(numbers, computation_con, position + 1, answer);
+	}
+}
+
+pub fn part2(input: String) -> i64 {
+	let mut result = 0;
+	let rules = parse(input);
+	for (answer, numbers) in rules {
+		let computation = numbers[0];
+		if is_equatable_concat(&numbers, computation, 1, answer) {
+			result += answer;
+		}
+	}
+
+	return result;
+}
