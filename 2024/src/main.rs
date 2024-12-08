@@ -13,6 +13,6 @@ mod day8;
 
 fn main() {
 	let contents = fs::read_to_string("inputs/day8_1.txt").expect("File should exist.");
-	let answer = day8::part1(contents);
+	let answer = day8::part2(contents);
 	println!("ANSWER: {}", answer);
 }
