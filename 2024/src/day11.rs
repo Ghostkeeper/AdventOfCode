@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rayon::prelude::*;
 
 fn parse(input: String) -> Vec<u64> {
     input.split(" ").map(|x| x.parse::<u64>().unwrap()).collect_vec()
@@ -53,7 +54,7 @@ pub fn part2(input: String) -> usize {
     let mut stones = parse(input);
 
     let mut result = 0;
-    for stone in stones {
+    for stone in stones.into_par_iter() {
         result += blink_n(stone, 75);
     }
 
