@@ -33,12 +33,29 @@ pub fn part1(input: String) -> usize {
     return stones.len();
 }
 
+fn blink_n(stone: u64, n: u8) -> usize {
+    if n == 0 {
+        return 1;
+    }
+    if stone == 0 {
+        return blink_n(1, n - 1);
+    }
+    let num_digits = stone.checked_ilog10().unwrap_or(0) + 1;
+    if num_digits % 2 == 0 {
+        let lower = stone % 10_u64.pow(num_digits / 2);
+        let upper = (stone - lower) / 10_u64.pow(num_digits / 2);
+        return blink_n(lower, n - 1) + blink_n(upper, n - 1);
+    }
+    return blink_n(stone * 2024, n - 1);
+}
+
 pub fn part2(input: String) -> usize {
     let mut stones = parse(input);
 
-    for _ in 0..75 {
-        blink(&mut stones);
+    let mut result = 0;
+    for stone in stones {
+        result += blink_n(stone, 75);
     }
 
-    return stones.len();
+    return result;
 }
