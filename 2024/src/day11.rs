@@ -5,8 +5,8 @@ fn parse(input: String) -> Vec<u64> {
 }
 
 fn blink(stones: &mut Vec<u64>) {
-    let mut i = 0;
-    while i < stones.len() {
+    let num_stones = stones.len();
+    for i in 0..num_stones {
         if stones[i] == 0 {
             stones[i] = 1;
         } else {
@@ -15,13 +15,11 @@ fn blink(stones: &mut Vec<u64>) {
                 let lower = stones[i] % 10_u64.pow(num_digits / 2);
                 let upper = (stones[i] - lower) / 10_u64.pow(num_digits / 2);
                 stones[i] = lower;
-                stones.insert(i, upper);
-                i += 1; //Skip the second part of this split.
+                stones.push(upper);
             } else {
                 stones[i] *= 2024;
             }
         }
-        i += 1;
     }
 }
 
@@ -29,6 +27,16 @@ pub fn part1(input: String) -> usize {
     let mut stones = parse(input);
 
     for _ in 0..25 {
+        blink(&mut stones);
+    }
+
+    return stones.len();
+}
+
+pub fn part2(input: String) -> usize {
+    let mut stones = parse(input);
+
+    for _ in 0..75 {
         blink(&mut stones);
     }
 
