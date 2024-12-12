@@ -111,24 +111,66 @@ pub fn part2(input: String) -> u64 {
             *perimeter.get_mut(&here).unwrap() += 4;
         }
     }
+    for line in ugrid.clone() {
+        println!("{:?}", line);
+    }
     for y in 0..ugrid.len() {
         for x in 1..ugrid[y].len() {
             if ugrid[y][x] == ugrid[y][x - 1] {
                 *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 2;
+            } else {
+                if y > 0 && ugrid[y - 1][x] == ugrid[y][x] && ugrid[y - 1][x] != ugrid[y - 1][x - 1] {
+                    //Border extends up higher.
+                    *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 1;
+                    if ugrid[y][x] == 1000 {println!("Reducing border size because border extends up higher at {},{}", x, y);}
+                    if ugrid[y][x - 1] == ugrid[y - 1][x - 1] {
+                        *perimeter.get_mut(&ugrid[y][x - 1]).unwrap() -= 1;
+                        if ugrid[y][x - 1] == 1000 {println!("Reducing border size because border extends up higher at {},{} opposite side", x, y);}
+                    }
+                }
             }
+        }
+        if y > 0 && ugrid[y - 1][0] == ugrid[y][0] {
+            *perimeter.get_mut(&ugrid[y][0]).unwrap() -= 1;
+            if ugrid[y][0] == 1000 {println!("Reducing border size because border extends up higher at {} at the left edge", y);}
+        }
+        if y > 0 && ugrid[y - 1][ugrid[0].len() - 1] == ugrid[y][ugrid[0].len() - 1] {
+            *perimeter.get_mut(&ugrid[y][ugrid[0].len() - 1]).unwrap() -= 1;
+            if ugrid[y][ugrid[0].len() - 1] == 1000 {println!("Reducing border size because border extends up higher at {} at the right edge", y);}
         }
     }
     for y in 1..ugrid.len() {
         for x in 0..ugrid[y].len() {
             if ugrid[y][x] == ugrid[y - 1][x] {
                 *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 2;
+            } else {
+                if x > 0 && ugrid[y][x - 1] == ugrid[y][x] && ugrid[y][x - 1] != ugrid[y - 1][x - 1] {
+                    //Border extends further left.
+                    *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 1;
+                    if ugrid[y][x] == 1000 {println!("Reducing border size because border extends left of {},{}", x, y);}
+                    if ugrid[y - 1][x] == ugrid[y - 1][x - 1] {
+                        *perimeter.get_mut(&ugrid[y][x - 1]).unwrap() -= 1;
+                        if ugrid[y][x - 1] == 1000 {println!("Reducing border size because border extends left of {},{} opposite side", x, y);}
+                    }
+                }
             }
+        }
+    }
+    for x in 1..ugrid[0].len() {
+        if ugrid[0][x - 1] == ugrid[0][x] {
+            *perimeter.get_mut(&ugrid[0][x]).unwrap() -= 1;
+            if ugrid[0][x] == 1000 {println!("Reducing border size because border extends left of {} at the top edge", x);}
+        }
+        if ugrid[ugrid.len() - 1][x - 1] == ugrid[ugrid.len() - 1][x] {
+            *perimeter.get_mut(&ugrid[ugrid.len() - 1][x]).unwrap() -= 1;
+            if ugrid[ugrid.len() - 1][x] == 1000 {println!("Reducing border size because border extends left of {} at the bottom edge", x);}
         }
     }
 
     let mut result = 0;
     for (cell_id, cell_area) in area {
         let cell_perimeter = perimeter.get(cell_id).unwrap();
+        println!("Cell with ID {} has area {} and perimeter {}", cell_id, cell_area, cell_perimeter);
         result += cell_area * cell_perimeter;
     }
     return result;
