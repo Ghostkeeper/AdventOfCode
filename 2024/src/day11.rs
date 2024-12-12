@@ -52,11 +52,14 @@ fn blink_n(stone: u64, n: u8) -> usize {
 
 pub fn part2(input: String) -> usize {
     let mut stones = parse(input);
-
-    let mut result = 0;
-    for stone in stones.into_par_iter() {
-        result += blink_n(stone, 75);
+    for _ in 0..4 { //A few layers fully calculated to allow creating more threads.
+        blink(&mut stones);
     }
 
+    let results: Vec<usize> = stones.into_par_iter().map(|stone| blink_n(stone, 71)).collect();
+    let mut result = 0;
+    for stone in results {
+        result += stone;
+    }
     return result;
 }
