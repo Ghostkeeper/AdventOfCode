@@ -93,3 +93,43 @@ pub fn part1(input: String) -> u64 {
     }
     return result;
 }
+
+pub fn part2(input: String) -> u64 {
+    let grid = parse(input);
+    let ugrid = make_unique(grid);
+
+    let mut area = HashMap::new();
+    let mut perimeter = HashMap::new();
+    for y in 0..ugrid.len() {
+        for x in 0..ugrid[y].len() {
+            let here = ugrid[y][x];
+            if !area.contains_key(&ugrid[y][x]) {
+                area.insert(&ugrid[y][x], 0);
+                perimeter.insert(&ugrid[y][x], 0);
+            }
+            *area.get_mut(&here).unwrap() += 1;
+            *perimeter.get_mut(&here).unwrap() += 4;
+        }
+    }
+    for y in 0..ugrid.len() {
+        for x in 1..ugrid[y].len() {
+            if ugrid[y][x] == ugrid[y][x - 1] {
+                *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 2;
+            }
+        }
+    }
+    for y in 1..ugrid.len() {
+        for x in 0..ugrid[y].len() {
+            if ugrid[y][x] == ugrid[y - 1][x] {
+                *perimeter.get_mut(&ugrid[y][x]).unwrap() -= 2;
+            }
+        }
+    }
+
+    let mut result = 0;
+    for (cell_id, cell_area) in area {
+        let cell_perimeter = perimeter.get(cell_id).unwrap();
+        result += cell_area * cell_perimeter;
+    }
+    return result;
+}
