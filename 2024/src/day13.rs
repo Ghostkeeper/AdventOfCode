@@ -31,3 +31,20 @@ pub fn part1(input: String) -> u32 {
 
 	return cost;
 }
+
+pub fn part2(input: String) -> u64 {
+	let machines = parse(input);
+
+	let mut cost = 0;
+	for (a, b, prize) in machines {
+		let real_prize = (prize.0 + 10000000000000.0, prize.1 + 10000000000000.0);
+		let cross = a.0 * b.1 - b.0 * a.1;
+		let num_a = (b.1 * real_prize.0 - b.0 * real_prize.1) / cross;
+		let num_b = (a.0 * real_prize.1 - a.1 * real_prize.0) / cross;
+		if num_a.round() == num_a && num_b.round() == num_b {
+			cost += 3 * (num_a as u64) + (num_b as u64);
+		}
+	}
+
+	return cost;
+}
