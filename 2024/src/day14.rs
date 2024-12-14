@@ -1,3 +1,4 @@
+use image::*;
 use itertools::Itertools;
 use regex::Regex;
 
@@ -74,7 +75,11 @@ fn print(robots: Vec<((i32, i32), (i32, i32))>) {
 					num += 1;
 				}
 			}
-			print!("{}", num);
+			if num == 0 {
+				print!(" ");
+			} else {
+				print!("{}", num);
+			}
 		}
 		println!();
 	}
@@ -88,4 +93,31 @@ pub fn part1(input: String) -> u64 {
 	}
 
 	return score(robots);
+}
+
+pub fn part2(input: String) -> u64 {
+	let mut robots = parse(input);
+
+	let mut i = 0;
+	for _ in 0..(WIDTH * HEIGHT) {
+		step(&mut robots);
+		i += 1;
+		let mut buffer = [0u8;(WIDTH * HEIGHT) as usize];
+		let mut pix = 0;
+		for y in 0..HEIGHT {
+			for x in 0..WIDTH {
+				for robot in robots.clone() {
+					if robot.0.0 == x && robot.0.1 == y {
+						buffer[pix] = 255;
+						break;
+					}
+				}
+				pix += 1;
+			}
+		}
+		let filename = format!("step{}.png", i);
+		save_buffer(filename, &buffer, WIDTH as u32, HEIGHT as u32, ExtendedColorType::L8).unwrap();
+	}
+
+	return i;
 }
