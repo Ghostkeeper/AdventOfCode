@@ -1,4 +1,5 @@
-use pathfinding::prelude::dijkstra;
+use std::collections::HashSet;
+use pathfinding::prelude::{dijkstra, yen};
 
 fn parse(input: String) -> (Vec<Vec<char>>, (i32, i32), (i32, i32)) {
 	let mut rows = vec!();
@@ -27,7 +28,7 @@ fn parse(input: String) -> (Vec<Vec<char>>, (i32, i32), (i32, i32)) {
 	return (rows, start_pos, goal_pos);
 }
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct State(i32, i32, u8);
 
 impl State {
@@ -58,4 +59,26 @@ pub fn part1(input: String) -> usize {
 	let (_path, cost) = result.expect("No path found.");
 
 	return cost;
+}
+
+pub fn part2(input: String) -> usize {
+	let k = 100;
+	let (grid, pos, goal) = parse(input);
+	let (_, lowest_cost) = dijkstra(&State(pos.0, pos.1, 0), |s| s.successors(&grid), |s| s.0 == goal.0 && s.1 == goal.1).unwrap();
+	let shortest_paths = yen(&State(pos.0, pos.1, 0), |s| s.successors(&grid), |s| s.0 == goal.0 && s.1 == goal.1, k);
+	if shortest_paths[shortest_paths.len() - 1].1 == lowest_cost {
+		panic!("All paths found are equal length to the shortest path! Increase K to possibly find more paths that are shortest.");
+	}
+
+	let mut optimal_seats = HashSet::new();
+	for (path, cost) in shortest_paths {
+		if cost > lowest_cost {
+			break;
+		}
+		for state in path {
+			optimal_seats.insert((state.0, state.1));
+		}
+	}
+
+	return optimal_seats.len();
 }
