@@ -26,8 +26,7 @@ fn combo(val: u8, a: i64, b: i64, c: i64) -> i64 {
 	}
 }
 
-pub fn part1(input: String) -> String {
-	let (mut a, mut b, mut c, program) = parse(input);
+fn execute(program: Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> Vec<u8> {
 	let mut instruction = 0;
 	let mut outputs = vec!();
 	while instruction < program.len() {
@@ -43,13 +42,18 @@ pub fn part1(input: String) -> String {
 				}
 			},
 			4 => b ^= c,
-			5 => outputs.push(format!("{}", combo(operand, a, b, c) % 8)),
+			5 => outputs.push((combo(operand, a, b, c) % 8) as u8),
 			6 => b = a / 2_i64.pow(combo(operand, a, b, c) as u32),
 			7 => c = a / 2_i64.pow(combo(operand, a, b, c) as u32),
 			_ => panic!("Unknown instruction"),
 		}
 		instruction += 2;
 	}
+	return outputs;
+}
 
-	return outputs.join(",");
+pub fn part1(input: String) -> String {
+	let (a, b, c, program) = parse(input);
+	let outputs = execute(program, a, b, c);
+	return outputs.iter().map(|o| format!("{}", o)).join(",");
 }
