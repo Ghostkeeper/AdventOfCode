@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rayon::prelude::*;
 use regex::Regex;
 
 fn parse(input: String) -> (i64, i64, i64, Vec<u8>) {
@@ -26,7 +27,7 @@ fn combo(val: u8, a: i64, b: i64, c: i64) -> i64 {
 	}
 }
 
-fn execute(program: Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> Vec<u8> {
+fn execute(program: &Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> Vec<u8> {
 	let mut instruction = 0;
 	let mut outputs = vec!();
 	while instruction < program.len() {
@@ -54,6 +55,43 @@ fn execute(program: Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> Vec<u8> {
 
 pub fn part1(input: String) -> String {
 	let (a, b, c, program) = parse(input);
-	let outputs = execute(program, a, b, c);
+	let outputs = execute(&program, a, b, c);
 	return outputs.iter().map(|o| format!("{}", o)).join(",");
+}
+
+fn execute_quine_search(program: &Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> bool {
+	let mut instruction = 0;
+	let mut output_pos = 0;
+	while instruction < program.len() {
+		let operand = program[instruction + 1];
+		match program[instruction] {
+			0 => a = a / 2_i64.pow(combo(operand, a, b, c) as u32),
+			1 => b = b ^ (operand as i64),
+			2 => b = combo(operand, a, b, c) % 8,
+			3 => {
+				if a != 0 {
+					instruction = operand as usize;
+					continue;
+				}
+			},
+			4 => b ^= c,
+			5 => {
+                let output = (combo(operand, a, b, c) % 8) as u8;
+                if output != program[output_pos] {
+                    return false;
+                }
+                output_pos += 1;
+            },
+			6 => b = a / 2_i64.pow(combo(operand, a, b, c) as u32),
+			7 => c = a / 2_i64.pow(combo(operand, a, b, c) as u32),
+			_ => panic!("Unknown instruction"),
+		}
+		instruction += 2;
+	}
+	return true;
+}
+
+pub fn part2(input: String) -> i64 {
+    let (_, b, c, program) = parse(input);
+    return (10000000000..999999999999999).into_par_iter().find_any(|a| { if a % 100000000 == 0 {println!("{}", a)}; execute_quine_search(&program, *a, b, c) }).expect("Didn't find any. Range too short?");
 }
