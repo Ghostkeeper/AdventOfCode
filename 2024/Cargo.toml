@@ -5,9 +5,25 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# Need this specific toolchain for rust-gpu.
+[toolchain]
+channel = "nightly-2024-04-24"
+components = ["rust-src", "rustc-dev", "llvm-tools"]
+
+[build-dependencies]
+spirv-builder = "0.9.0"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
 [dependencies]
 image = "0.25.5"
 itertools = "0.12.0"
 pathfinding = "4.12.0"
 rayon = "1.8.0"
 regex = "1.10.2"
+tikv-jemallocator = "0.5.4"

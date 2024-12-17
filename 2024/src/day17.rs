@@ -59,13 +59,14 @@ pub fn part1(input: String) -> String {
 	return outputs.iter().map(|o| format!("{}", o)).join(",");
 }
 
+#[inline(always)]
 fn execute_quine_search(program: &Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -> bool {
 	let mut instruction = 0;
 	let mut output_pos = 0;
 	while instruction < program.len() {
 		let operand = program[instruction + 1];
 		match program[instruction] {
-			0 => a = a / 2_i64.pow(combo(operand, a, b, c) as u32),
+			0 => a = a >> combo(operand, a, b, c),
 			1 => b = b ^ (operand as i64),
 			2 => b = combo(operand, a, b, c) % 8,
 			3 => {
@@ -76,22 +77,22 @@ fn execute_quine_search(program: &Vec<u8>, mut a: i64, mut b: i64, mut c: i64) -
 			},
 			4 => b ^= c,
 			5 => {
-                let output = (combo(operand, a, b, c) % 8) as u8;
-                if output != program[output_pos] {
-                    return false;
-                }
-                output_pos += 1;
-            },
-			6 => b = a / 2_i64.pow(combo(operand, a, b, c) as u32),
-			7 => c = a / 2_i64.pow(combo(operand, a, b, c) as u32),
+				let output = (combo(operand, a, b, c) % 8) as u8;
+				if output_pos >= program.len() || output != program[output_pos] {
+					return false;
+				}
+				output_pos += 1;
+			},
+			6 => b = a >> combo(operand, a, b, c),
+			7 => c = a >> combo(operand, a, b, c),
 			_ => panic!("Unknown instruction"),
 		}
 		instruction += 2;
 	}
-	return true;
+	return output_pos == program.len();
 }
 
 pub fn part2(input: String) -> i64 {
-    let (_, b, c, program) = parse(input);
-    return (10000000000..999999999999999).into_par_iter().find_any(|a| { if a % 100000000 == 0 {println!("{}", a)}; execute_quine_search(&program, *a, b, c) }).expect("Didn't find any. Range too short?");
+	let (_, b, c, program) = parse(input);
+	return (0..999999999999999).into_par_iter().find_any(|a| { if a % 100000000 == 0 {println!("{}", a)}; execute_quine_search(&program, *a, b, c) }).expect("Didn't find any. Range too short?");
 }
