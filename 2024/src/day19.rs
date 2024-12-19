@@ -19,10 +19,10 @@ pub fn part1(input: String) -> u32 {
 	designs.into_par_iter().map(|design| { re.is_match(&design) as u32 }).sum()
 }
 
-fn num_arrangements(design: &String, patterns: &Vec<String>, start_index: usize) -> u64 {
+fn num_arrangements(design: &str, patterns: &Vec<&str>, start_index: usize) -> u64 {
 	let mut result = 0;
-	for pattern in patterns {
-        let end_index = start_index + pattern.len();
+	for &pattern in patterns {
+		let end_index = start_index + pattern.len();
 		if end_index > design.len() {
 			continue; //This pattern is too long.
 		}
@@ -31,19 +31,20 @@ fn num_arrangements(design: &String, patterns: &Vec<String>, start_index: usize)
 		}
 		//All characters match.
 		if end_index == design.len() {
-            result += 1;
-        } else {
-    		result += num_arrangements(&design, &patterns, end_index);
-    	}
+			result += 1;
+		} else {
+			result += num_arrangements(&design, &patterns, end_index);
+		}
 	}
 	return result;
 }
 
 pub fn part2(input: String) -> u64 {
 	let (patterns, designs) = parse(input);
+	let patterns_ref = patterns.iter().map(AsRef::as_ref).collect();
 	designs.into_par_iter().map(|design| {
-        let arrangements = num_arrangements(&design, &patterns, 0);
-        println!("Design {} has {} arrangements", design, arrangements);
-        arrangements
-    }).sum()
+		let arrangements = num_arrangements(&design, &patterns_ref, 0);
+		println!("Design {} has {} arrangements", design, arrangements);
+		arrangements
+	}).sum()
 }
