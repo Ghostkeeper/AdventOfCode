@@ -1,4 +1,5 @@
 use pathfinding::prelude::dijkstra;
+use rayon::prelude::*;
 use std::collections::HashMap;
 
 fn parse(input: String) -> (Vec<Vec<char>>, (usize, usize), (usize, usize)) {
@@ -89,8 +90,8 @@ pub fn part2(input: String) -> usize {
 		}, |&pos| pos == end).unwrap();
 	let no_cheating_time = no_cheating.0.len() - 1;
 
-    let mut saves_time = HashMap::new();
-	for cheat_start in &no_cheating.0 {
+	let num_cheats = &no_cheating.0.into_par_iter().map(|cheat_start| {
+        let mut saves_time = HashMap::new();
         let first_half = dijkstra(&start, |&(x, y)| {
             let mut neighbours = vec!();
             if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
@@ -98,16 +99,16 @@ pub fn part2(input: String) -> usize {
             if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
             if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
             neighbours.into_iter().map(|p| (p, 1))
-        }, |&pos| pos == *cheat_start).unwrap();
+        }, |&pos| pos == cheat_start).unwrap();
 
-        let (sx, sy) = *cheat_start;
+        let (sx, sy) = cheat_start;
         let mut possible_cheat_ends = vec!();
-        for dx in -20i32..20i32 {
+        for dx in -21i32..21i32 {
             let ex = sx as i32 + dx;
             if ex < 1 || ex >= grid[0].len() as i32 - 1 {
                 continue; //Don't go into the border.
             }
-            for dy in -20..20 {
+            for dy in -21..21 {
                 let ey = sy as i32 + dy;
                 if ey < 1 || ey >= grid.len() as i32 - 1 {
                     continue; //Don't go into the border.
@@ -134,13 +135,14 @@ pub fn part2(input: String) -> usize {
             if second_half.is_some() {
                 let cheat_time = ((cheat_start.0 as i32 - cheat_end.0 as i32).abs() + (cheat_start.1 as i32 - cheat_end.1 as i32).abs()) as usize;
                 let cheating_time = first_half.0.len() - 1 + cheat_time + second_half.unwrap().0.len() - 1;
-                if no_cheating_time as i32 - cheating_time as i32 >= 50 {
+                if no_cheating_time as i32 - cheating_time as i32 >= 100 {
                     let savings = no_cheating_time - cheating_time;
                     saves_time.insert((cheat_start, cheat_end), savings);
                 }
             }
         }
-    }
+        return saves_time.len();
+    }).sum();
 
-    return saves_time.len();
+    return *num_cheats;
 }
