@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use rayon::prelude::*;
 use regex::Regex;
+use std::collections::HashMap;
 
 fn parse(input: String) -> (Vec<String>, Vec<String>) {
 	let mut parts = input.split("\n\n");
@@ -19,7 +20,11 @@ pub fn part1(input: String) -> u32 {
 	designs.into_par_iter().map(|design| { re.is_match(&design) as u32 }).sum()
 }
 
-fn num_arrangements(design: &str, patterns: &Vec<&str>, start_index: usize) -> u64 {
+fn num_arrangements(cache: &mut HashMap<String, u64>, design: &str, patterns: &Vec<&str>, start_index: usize) -> u64 {
+	let remaining = design[start_index..].to_string();
+	if cache.contains_key(&remaining) {
+		return *cache.get(&remaining).unwrap();
+	}
 	let mut result = 0;
 	for &pattern in patterns {
 		let end_index = start_index + pattern.len();
@@ -33,18 +38,21 @@ fn num_arrangements(design: &str, patterns: &Vec<&str>, start_index: usize) -> u
 		if end_index == design.len() {
 			result += 1;
 		} else {
-			result += num_arrangements(&design, &patterns, end_index);
+			result += num_arrangements(cache, &design, &patterns, end_index);
 		}
 	}
+	cache.insert(remaining, result);
 	return result;
 }
 
 pub fn part2(input: String) -> u64 {
 	let (patterns, designs) = parse(input);
 	let patterns_ref = patterns.iter().map(AsRef::as_ref).collect();
-	designs.into_par_iter().map(|design| {
-		let arrangements = num_arrangements(&design, &patterns_ref, 0);
-		println!("Design {} has {} arrangements", design, arrangements);
-		arrangements
-	}).sum()
+	let mut cache = HashMap::new();
+	let mut sum = 0;
+	for design in designs {
+		let arrangements = num_arrangements(&mut cache, &design, &patterns_ref, 0);
+		sum += arrangements;
+	}
+	return sum;
 }
