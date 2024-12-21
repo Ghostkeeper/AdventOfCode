@@ -30,8 +30,8 @@ fn parse(input: String) -> (Vec<Vec<char>>, (usize, usize), (usize, usize)) {
 }
 
 pub fn part1(input: String) -> usize {
-    let (grid, start, end) = parse(input);
-    let no_cheating = dijkstra(&start, |&(x, y)| {
+	let (grid, start, end) = parse(input);
+	let no_cheating = dijkstra(&start, |&(x, y)| {
 			let mut neighbours = vec!();
 			if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
 			if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
@@ -41,46 +41,46 @@ pub fn part1(input: String) -> usize {
 		}, |&pos| pos == end).unwrap();
 	let no_cheating_time = no_cheating.0.len() - 1;
 
-    let mut saves_time = HashMap::new();
+	let mut saves_time = HashMap::new();
 	for cheat_start in &no_cheating.0 {
-        let first_half = dijkstra(&start, |&(x, y)| {
-            let mut neighbours = vec!();
-            if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
-            if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
-            if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
-            if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
-            neighbours.into_iter().map(|p| (p, 1))
-        }, |&pos| pos == *cheat_start).unwrap();
+		let first_half = dijkstra(&start, |&(x, y)| {
+			let mut neighbours = vec!();
+			if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
+			if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
+			if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
+			if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
+			neighbours.into_iter().map(|p| (p, 1))
+		}, |&pos| pos == *cheat_start).unwrap();
 
-        let mut possible_cheat_ends = vec!();
-        if cheat_start.0 > 2 && grid[cheat_start.1][cheat_start.0 - 1] == '#' { possible_cheat_ends.push((cheat_start.0 - 1, cheat_start.1)); }
-        if cheat_start.0 < grid[0].len() - 2 && grid[cheat_start.1][cheat_start.0 + 1] == '#' { possible_cheat_ends.push((cheat_start.0 + 1, cheat_start.1)); }
-        if cheat_start.1 > 2 && grid[cheat_start.1 - 1][cheat_start.0] == '#' { possible_cheat_ends.push((cheat_start.0, cheat_start.1 - 1)); }
-        if cheat_start.1 < grid.len() - 2 && grid[cheat_start.1 + 1][cheat_start.0] == '#' { possible_cheat_ends.push((cheat_start.0, cheat_start.1 + 1)); }
-        for cheat_end in possible_cheat_ends {
-            let second_half = dijkstra(&cheat_end, |&(x, y)| {
-                let mut neighbours = vec!();
-                if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
-                if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
-                if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
-                if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
-                neighbours.into_iter().map(|p| (p, 1))
-            }, |&pos| pos == end);
-            if second_half.is_some() {
-                let cheating_time = first_half.0.len() - 1 + second_half.unwrap().0.len();
-                if no_cheating_time as i32 - cheating_time as i32 >= 100 {
-                    saves_time.insert((cheat_start, cheat_end), no_cheating_time - cheating_time);
-                }
-            }
-        }
-    }
+		let mut possible_cheat_ends = vec!();
+		if cheat_start.0 > 2 && grid[cheat_start.1][cheat_start.0 - 1] == '#' { possible_cheat_ends.push((cheat_start.0 - 1, cheat_start.1)); }
+		if cheat_start.0 < grid[0].len() - 2 && grid[cheat_start.1][cheat_start.0 + 1] == '#' { possible_cheat_ends.push((cheat_start.0 + 1, cheat_start.1)); }
+		if cheat_start.1 > 2 && grid[cheat_start.1 - 1][cheat_start.0] == '#' { possible_cheat_ends.push((cheat_start.0, cheat_start.1 - 1)); }
+		if cheat_start.1 < grid.len() - 2 && grid[cheat_start.1 + 1][cheat_start.0] == '#' { possible_cheat_ends.push((cheat_start.0, cheat_start.1 + 1)); }
+		for cheat_end in possible_cheat_ends {
+			let second_half = dijkstra(&cheat_end, |&(x, y)| {
+				let mut neighbours = vec!();
+				if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
+				if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
+				if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
+				if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
+				neighbours.into_iter().map(|p| (p, 1))
+			}, |&pos| pos == end);
+			if second_half.is_some() {
+				let cheating_time = first_half.0.len() - 1 + second_half.unwrap().0.len();
+				if no_cheating_time as i32 - cheating_time as i32 >= 100 {
+					saves_time.insert((cheat_start, cheat_end), no_cheating_time - cheating_time);
+				}
+			}
+		}
+	}
 
-    return saves_time.len();
+	return saves_time.len();
 }
 
 pub fn part2(input: String) -> usize {
-    let (grid, start, end) = parse(input);
-    let no_cheating = dijkstra(&start, |&(x, y)| {
+	let (grid, start, end) = parse(input);
+	let no_cheating = dijkstra(&start, |&(x, y)| {
 			let mut neighbours = vec!();
 			if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
 			if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
@@ -91,58 +91,58 @@ pub fn part2(input: String) -> usize {
 	let no_cheating_time = no_cheating.0.len() - 1;
 
 	let num_cheats = &no_cheating.0.into_par_iter().map(|cheat_start| {
-        let mut saves_time = HashMap::new();
-        let first_half = dijkstra(&start, |&(x, y)| {
-            let mut neighbours = vec!();
-            if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
-            if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
-            if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
-            if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
-            neighbours.into_iter().map(|p| (p, 1))
-        }, |&pos| pos == cheat_start).unwrap();
+		let mut saves_time = HashMap::new();
+		let first_half = dijkstra(&start, |&(x, y)| {
+			let mut neighbours = vec!();
+			if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
+			if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
+			if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
+			if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
+			neighbours.into_iter().map(|p| (p, 1))
+		}, |&pos| pos == cheat_start).unwrap();
 
-        let (sx, sy) = cheat_start;
-        let mut possible_cheat_ends = vec!();
-        for dx in -21i32..21i32 {
-            let ex = sx as i32 + dx;
-            if ex < 1 || ex >= grid[0].len() as i32 - 1 {
-                continue; //Don't go into the border.
-            }
-            for dy in -21..21 {
-                let ey = sy as i32 + dy;
-                if ey < 1 || ey >= grid.len() as i32 - 1 {
-                    continue; //Don't go into the border.
-                }
-                let cheat_time = dx.abs() + dy.abs();
-                if cheat_time > 20 {
-                    continue; //More than 20 picoseconds is not allowed.
-                }
-                if grid[ey as usize][ex as usize] != '.' {
-                    continue; //Must end on an open spot.
-                }
-                possible_cheat_ends.push((ex as usize, ey as usize));
-            }
-        }
-        for cheat_end in possible_cheat_ends {
-            let second_half = dijkstra(&cheat_end, |&(x, y)| {
-                let mut neighbours = vec!();
-                if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
-                if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
-                if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
-                if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
-                neighbours.into_iter().map(|p| (p, 1))
-            }, |&pos| pos == end);
-            if second_half.is_some() {
-                let cheat_time = ((cheat_start.0 as i32 - cheat_end.0 as i32).abs() + (cheat_start.1 as i32 - cheat_end.1 as i32).abs()) as usize;
-                let cheating_time = first_half.0.len() - 1 + cheat_time + second_half.unwrap().0.len() - 1;
-                if no_cheating_time as i32 - cheating_time as i32 >= 100 {
-                    let savings = no_cheating_time - cheating_time;
-                    saves_time.insert((cheat_start, cheat_end), savings);
-                }
-            }
-        }
-        return saves_time.len();
-    }).sum();
+		let (sx, sy) = cheat_start;
+		let mut possible_cheat_ends = vec!();
+		for dx in -21i32..21i32 {
+			let ex = sx as i32 + dx;
+			if ex < 1 || ex >= grid[0].len() as i32 - 1 {
+				continue; //Don't go into the border.
+			}
+			for dy in -21..21 {
+				let ey = sy as i32 + dy;
+				if ey < 1 || ey >= grid.len() as i32 - 1 {
+					continue; //Don't go into the border.
+				}
+				let cheat_time = dx.abs() + dy.abs();
+				if cheat_time > 20 {
+					continue; //More than 20 picoseconds is not allowed.
+				}
+				if grid[ey as usize][ex as usize] != '.' {
+					continue; //Must end on an open spot.
+				}
+				possible_cheat_ends.push((ex as usize, ey as usize));
+			}
+		}
+		for cheat_end in possible_cheat_ends {
+			let second_half = dijkstra(&cheat_end, |&(x, y)| {
+				let mut neighbours = vec!();
+				if grid[y][x - 1] == '.' { neighbours.push((x - 1, y)); }
+				if grid[y][x + 1] == '.' { neighbours.push((x + 1, y)); }
+				if grid[y - 1][x] == '.' { neighbours.push((x, y - 1)); }
+				if grid[y + 1][x] == '.' { neighbours.push((x, y + 1)); }
+				neighbours.into_iter().map(|p| (p, 1))
+			}, |&pos| pos == end);
+			if second_half.is_some() {
+				let cheat_time = ((cheat_start.0 as i32 - cheat_end.0 as i32).abs() + (cheat_start.1 as i32 - cheat_end.1 as i32).abs()) as usize;
+				let cheating_time = first_half.0.len() - 1 + cheat_time + second_half.unwrap().0.len() - 1;
+				if no_cheating_time as i32 - cheating_time as i32 >= 100 {
+					let savings = no_cheating_time - cheating_time;
+					saves_time.insert((cheat_start, cheat_end), savings);
+				}
+			}
+		}
+		return saves_time.len();
+	}).sum();
 
-    return *num_cheats;
+	return *num_cheats;
 }
