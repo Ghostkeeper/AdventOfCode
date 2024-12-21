@@ -1,4 +1,5 @@
-use std::collections::{BinaryHeap, HashSet};
+use rayon::prelude::*;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 fn parse(input: String) -> Vec<Vec<char>> {
 	let mut codes = vec!();
@@ -22,9 +23,12 @@ fn use_dirpad(x: usize, y: usize, keypress: char, pad: &[&[char]]) -> (usize, us
 	}
 }
 
-fn cost(goal: char, previous_key: char, depth: usize) -> usize {
+fn cost(goal: char, previous_key: char, depth: usize, cache: &mut HashMap<(char, char, usize), usize>) -> usize {
 	if depth == 0 {
 		return 1;
+	}
+	if cache.contains_key(&(goal, previous_key, depth)) {
+		return *cache.get(&(goal, previous_key, depth)).unwrap();
 	}
 	let start = match previous_key {
 		'^' => (1, 0),
@@ -40,6 +44,7 @@ fn cost(goal: char, previous_key: char, depth: usize) -> usize {
 		let (priority, (x, y), prev, out) = search_queue.pop().unwrap();
 		let dist = (-priority) as usize;
 		if out == goal {
+			cache.insert((goal, previous_key, depth), dist);
 			return dist;
 		}
 		for key in ['A', '<', '^', '>', 'v'] {
@@ -50,7 +55,7 @@ fn cost(goal: char, previous_key: char, depth: usize) -> usize {
 			if result_key.is_some() && result_key.unwrap() != goal {
 				continue;
 			}
-			let distance_including = dist + cost(key, prev, depth - 1);
+			let distance_including = dist + cost(key, prev, depth - 1, cache);
 			search_queue.push((-(distance_including as i64), (new_x, new_y), key, result_key.unwrap_or('?')));
 		}
 	}
@@ -60,6 +65,7 @@ fn cost(goal: char, previous_key: char, depth: usize) -> usize {
 fn numcode_cost(numcode: &Vec<char>, depth: usize) -> usize {
 	let mut search_queue = BinaryHeap::new();
 	search_queue.push((0, (2, 3), 'A', 0));
+	let mut cache = HashMap::new();
 	let mut seen = HashSet::new();
 	while !search_queue.is_empty() {
 		let (priority, (x, y), prev, codepos) = search_queue.pop().unwrap();
@@ -84,7 +90,7 @@ fn numcode_cost(numcode: &Vec<char>, depth: usize) -> usize {
 				}
 				new_codepos += 1;
 			}
-			let distance_including = dist + cost(key, prev, depth);
+			let distance_including = dist + cost(key, prev, depth, &mut cache);
 			search_queue.push((-(distance_including as i64), (new_x, new_y), key, new_codepos));
 		}
 	}
@@ -103,4 +109,15 @@ pub fn part1(input: String) -> usize {
 		sum += complexity;
 	}
 	return sum;
+}
+
+pub fn part2(input: String) -> usize {
+	let numcodes = parse(input);
+
+	numcodes.into_par_iter().map(|numcode| {
+		let codecost = numcode_cost(&numcode, 25);
+		let numeric_bit = numcode[..numcode.len() - 1].iter().collect::<String>();
+		let numeric_number = numeric_bit.parse::<usize>().unwrap();
+		numeric_number * codecost
+	}).sum()
 }
