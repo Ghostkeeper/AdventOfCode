@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rayon::prelude::*;
 
 fn parse(input: String) -> Vec<i32> {
 	input.split("\n").map(|line| line.parse::<i32>().unwrap()).collect_vec()
@@ -26,8 +27,8 @@ pub fn part1(input: String) -> u64 {
 pub fn part2(input: String) -> i32 {
 	let secrets = parse(input);
 
-	let mut max_profit = i32::MIN;
-	for d1 in -9..10 {
+	let max_profit_multithread = (-9..10).into_par_iter().map(|d1| {
+		let mut max_profit = i32::MIN;
 		for d2 in -9..10 {
 			for d3 in -9..10 {
 				for d4 in -9..10 {
@@ -53,12 +54,12 @@ pub fn part2(input: String) -> i32 {
 					}
 					if profit > max_profit {
 						max_profit = profit;
-						println!("Found max profit so far ({}) using sequence {} {} {} {}", profit, d1, d2, d3, d4);
 					}
 				}
 			}
 		}
-	}
+		max_profit
+	}).max().unwrap();
 
-	max_profit
+	max_profit_multithread
 }
