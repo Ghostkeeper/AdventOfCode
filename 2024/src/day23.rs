@@ -1,5 +1,6 @@
 use rayon::prelude::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use itertools::Itertools;
 
 fn parse(input: String) -> (Vec<String>, Vec<Vec<bool>>) {
 	let mut name_to_pos = HashMap::new();
@@ -45,4 +46,41 @@ pub fn part1(input: String) -> u64 {
 	}).sum();
 
 	return sum_3cliques;
+}
+
+pub fn part2(input: String) -> String {
+	let (names, connected) = parse(input);
+
+	let mut cliques = vec!();
+	//Find all 3-cliques to start with.
+	for i in 0..names.len() {
+		for j in (i + 1)..names.len() {
+			for k in (j + 1)..names.len() {
+				if connected[i][j] && connected[j][k] && connected[k][i] {
+					cliques.push(vec![i, j, k]);
+				}
+			}
+		}
+	}
+	loop {
+		let mut bigger_cliques = vec!();
+		for mut clique in cliques.iter_mut() {
+			'recruit: for i in 0..names.len() {
+				for member in clique.iter() {
+					if !connected[*member][i] {
+						continue 'recruit; //i is not part of a bigger clique.
+					}
+				}
+				//i is part of a bigger clique!
+				clique.push(i);
+				bigger_cliques.push(clique.iter().map(|i| *i).sorted().collect_vec());
+			}
+		}
+		if bigger_cliques.len() == 0 {
+			break;
+		}
+		cliques = bigger_cliques;
+	}
+	let code = cliques[0].iter().map(|i| names[*i].clone()).sorted().join(",");
+	return code;
 }
