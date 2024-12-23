@@ -37,7 +37,8 @@ pub fn part2(input: String) -> i32 {
 					}
 					let mut profit = 0;
 					for mut secret in secrets.clone() {
-						let (mut diff1, mut diff2, mut diff3, mut diff4) = (100, 100, 100, 100);
+						let mut diff1;
+						let (mut diff2, mut diff3, mut diff4) = (100, 100, 100);
 						for _ in 0..2000 {
 							let previous = secret;
 							secret = pseudorandom(secret);
