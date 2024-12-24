@@ -1,5 +1,5 @@
 use rayon::prelude::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use itertools::Itertools;
 
 fn parse(input: String) -> (Vec<String>, Vec<Vec<bool>>) {
@@ -64,7 +64,7 @@ pub fn part2(input: String) -> String {
 	}
 	loop {
 		let mut bigger_cliques = vec!();
-		for mut clique in cliques.iter_mut() {
+		for clique in cliques.iter_mut() {
 			'recruit: for i in 0..names.len() {
 				for member in clique.iter() {
 					if !connected[*member][i] {
