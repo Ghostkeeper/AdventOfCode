@@ -2,6 +2,7 @@ use itertools::Itertools;
 use std::collections::HashMap;
 use regex::Regex;
 
+#[derive(Eq, PartialEq, Hash, Copy, Clone, Debug)]
 enum Operator {
 	OR,
 	AND,
@@ -70,4 +71,52 @@ pub fn part1(input: String) -> u64 {
 	}
 
 	return result;
+}
+
+pub fn part2(input: String) -> String {
+    let (states, connections) = parse(input);
+
+    //Count the number of bits that this adder supports.
+    let mut num_bits = 0;
+    for wire in states.keys() {
+        if wire.starts_with("x") {
+            num_bits += 1;
+        }
+    }
+
+    let mut is_valid = vec![true; connections.len()];
+    let mut i = 0;
+    for (left, right, operator, output) in &connections {
+        //Check for some obvious errors to prune the search as much as we can.
+		if output.starts_with("z") && *operator != Operator::XOR && *output != format!("z{}", num_bits) {
+			//All outputs must be XOR (and cannot use AND and OR to construct XOR because there is no negation).
+			is_valid[i] = false;
+		} else if *operator == Operator::XOR && !left.starts_with("x") && !left.starts_with("y") && !right.starts_with("x") && !right.starts_with("y") && !output.starts_with("z") {
+			//XORs can only be used for input and output. The rest of the operators are AND and OR.
+			is_valid[i] = false;
+		} else if *operator == Operator::XOR {
+			//XOR must output into an AND of another XOR.
+			for (other_left, other_right, other_operator, _) in &connections {
+				if (*output == *other_left || *output == *other_right) && *other_operator == Operator::OR {
+					is_valid[i] = false;
+					break;
+				}
+			}
+		} else if *operator == Operator::AND {
+			//AND must output into OR.
+			if (left == "x00" && right == "y00") || (left == "y00" && right == "x00") {
+				//Except with bit 0 which must be an AND.
+			} else {
+				for (other_left, other_right, other_operator, _) in &connections {
+					if (*output == *other_left || *output == *other_right) && *other_operator != Operator::OR {
+						is_valid[i] = false;
+						break;
+					}
+				}
+			}
+		}
+        i += 1;
+    }
+
+	is_valid.iter().zip(connections).filter(|x| !*x.0).map(|x| x.1.3).sorted().join(",")
 }
