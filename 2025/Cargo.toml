@@ -1,0 +1,16 @@
+[package]
+name = "aoc2025"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
+[dependencies]
+itertools = "0.12.0"
+regex = "1.10.2"
+tikv-jemallocator = "0.5.4"
