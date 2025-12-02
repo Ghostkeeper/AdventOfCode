@@ -4,7 +4,9 @@ use std::fs;
 use std::time::Instant;
 use tikv_jemallocator::Jemalloc;
 
+mod day1;
 mod day2;
+mod util;
 
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
