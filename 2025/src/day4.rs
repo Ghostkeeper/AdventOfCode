@@ -40,3 +40,16 @@ pub fn part1(input: String) -> u32 {
 	let result = consume(&mut grid);
     return result;
 }
+
+pub fn part2(input: String) -> u32 {
+    let mut grid = parse(input);
+    let mut consumed = 0;
+    loop {
+        let eat = consume(&mut grid);
+        consumed += eat;
+        if eat == 0 {
+            break;
+        }
+    }
+    return consumed;
+}
