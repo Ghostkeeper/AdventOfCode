@@ -34,3 +34,29 @@ pub fn part1(input: String) -> u64 {
 
     fresh
 }
+
+pub fn part2(input: String) -> u64 {
+	let (mut ranges, _) = parse(input);
+	ranges.sort();
+	let mut unioned: Vec<(u64, u64)> = vec!();
+
+	for range in ranges {
+		if unioned.is_empty() {
+			unioned.push(range);
+			continue;
+		}
+
+		let previous = unioned.last_mut().unwrap();
+		if range.0 <= previous.1 {
+			previous.1 = range.1.max(previous.1);
+		} else {
+			unioned.push(range);
+		}
+	}
+
+	let mut count = 0;
+	for range in unioned {
+		count += range.1 - range.0 + 1;
+	}
+	count
+}
