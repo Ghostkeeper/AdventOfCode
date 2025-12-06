@@ -18,7 +18,7 @@ static GLOBAL: Jemalloc = Jemalloc;
 fn main() {
 	let contents = fs::read_to_string("inputs/day6_1.txt").expect("File should exist.");
 	let start = Instant::now();
-	let answer = day6::part1(contents);
+	let answer = day6::part2(contents);
 	let elapsed = start.elapsed();
 	println!("ANSWER: {}", answer);
 	println!("Elapsed time: {:.2?}", elapsed);
