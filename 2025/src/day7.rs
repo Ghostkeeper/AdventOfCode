@@ -31,3 +31,38 @@ pub fn part1(input: String) -> u32 {
     }
     split_count
 }
+
+fn split_down(grid: &mut Vec<Vec<char>>, beam_count: &mut Vec<Vec<u64>>, y: usize) {
+    for x in 0..grid[y].len() {
+        if grid[y][x] == 'S' {
+            beam_count[y][x] = 1;
+        }
+    }
+    for x in 0..grid[y].len() {
+        if beam_count[y][x] > 0 {
+            if grid[y + 1][x] == '^' {
+                beam_count[y + 1][x - 1] += beam_count[y][x];
+                beam_count[y + 1][x + 1] += beam_count[y][x];
+            } else {
+                beam_count[y + 1][x] += beam_count[y][x];
+            }
+        }
+    }
+}
+
+pub fn part2(input: String) -> u64 {
+    let mut grid = parse(input);
+    let mut beam_count = vec!();
+    for row in &grid {
+        beam_count.push(vec![0u64; row.len()]);
+    }
+
+    for y in 0..grid.len() - 1 {
+        split_down(&mut grid, &mut beam_count, y);
+    }
+    let mut total = 0;
+    for x in 0..beam_count[beam_count.len() - 1].len() {
+        total += beam_count[beam_count.len() - 1][x];
+    }
+    total
+}
