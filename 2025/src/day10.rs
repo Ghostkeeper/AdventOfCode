@@ -1,6 +1,4 @@
-use std::collections::BinaryHeap;
 use std::collections::HashMap;
-use std::cmp::Ordering;
 
 struct Machine {
     goal: u32,
@@ -45,73 +43,45 @@ fn parse(input: String) -> Vec<Machine> {
     machines
 }
 
-//Graph nodes for A*.
-#[derive(Copy, Clone, Eq, PartialEq)]
-struct Node {
-    state: u32,
-    path_len: u32,
-    heuristic_cost: u32,
-}
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> Ordering {
-        (other.path_len + other.heuristic_cost).cmp(&(self.path_len + self.heuristic_cost))
+fn dfs(state: &mut u32, machine: &Machine, path_len: usize, cache: &mut HashMap<(u32, usize), i64>) -> i64 {
+    if *state == machine.goal {
+        return 0;
     }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+    if path_len == machine.buttons.len() {
+        return -1;
     }
-}
 
-fn distance(a: u32, b: u32) -> u32 {
-    //Bit twiddling hack from https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
-    let mut v = (a ^ b) as u64;
-    v = v - ((v >> 1) & 0x55555555u64);
-    v = (v & 0x33333333u64) + ((v >> 2) & 0x33333333u64);
-    (((v + (v >> 4) & 0xF0F0F0Fu64) * 0x1010101u64) >> 24) as u32
-}
+    let key = (*state, path_len);
+    if let Some(c) = cache.get(&key) {
+        return *c;
+    }
 
-fn press_buttons(machine: Machine) -> u32 {
-    //An N-dimensional A* algorithm to get to the goal state.
-    let mut open_set = BinaryHeap::new();
-    open_set.push(Node{state: 0, path_len: 0, heuristic_cost: distance(0, machine.goal)});
-    let mut path_lens = HashMap::new();
-    path_lens.insert(0, 0);
-
-    while let Some(current) = open_set.pop() {
-        if current.state == machine.goal {
-            return current.path_len;
+    let mut result = i64::MAX - 1;
+    for i in path_len..machine.buttons.len() {
+        for &k in &machine.buttons[i] {
+            *state ^= 1u32 << k;
         }
-        
-        //Get neighbouring states.
-        for button in &machine.buttons {
-            let mut neighbour_state = current.state;
-            for i in button {
-                neighbour_state = neighbour_state ^ (1u32 << i);
-            }
-            let neighbour_path_len = path_lens[&current.state] + 1;
-            if neighbour_path_len < *path_lens.get(&neighbour_state).unwrap_or(&u32::MAX) {
-                path_lens.insert(neighbour_state, neighbour_path_len);
-                open_set.push(Node {
-                    state: neighbour_state,
-                    path_len: neighbour_path_len,
-                    heuristic_cost: distance(neighbour_state, machine.goal),
-                });
-            }
+        let r = 1 + dfs(state, machine, i + 1, cache);
+        if r > 0 {
+            result = result.min(r);
+        }
+        //Restore.
+        for &k in &machine.buttons[i] {
+            *state ^= 1u32 << k;
         }
     }
 
-    u32::MAX
+    cache.insert(key, result);
+    result
 }
 
-pub fn part1(input: String) -> u32 {
+pub fn part1(input: String) -> i64 {
     let machines = parse(input);
 
     let mut total = 0;
+    let mut state = 0;
     for machine in machines {
-        total += press_buttons(machine);
+        total += dfs(&mut state, &machine, 0, &mut HashMap::new());
     }
     total
 }
