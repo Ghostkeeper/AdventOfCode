@@ -68,9 +68,9 @@ impl PartialOrd for Node {
 fn distance(a: u32, b: u32) -> u32 {
     //Bit twiddling hack from https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
     let mut v = (a ^ b) as u64;
-    v = v - ((v >> 1) & 0x55555555);
-    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-    (((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24) as u32
+    v = v - ((v >> 1) & 0x55555555u64);
+    v = (v & 0x33333333u64) + ((v >> 2) & 0x33333333u64);
+    (((v + (v >> 4) & 0xF0F0F0Fu64) * 0x1010101u64) >> 24) as u32
 }
 
 fn press_buttons(machine: Machine) -> u32 {
@@ -89,7 +89,7 @@ fn press_buttons(machine: Machine) -> u32 {
         for button in &machine.buttons {
             let mut neighbour_state = current.state;
             for i in button {
-                neighbour_state ^= 1 << i;
+                neighbour_state = neighbour_state ^ (1u32 << i);
             }
             let neighbour_path_len = path_lens[&current.state] + 1;
             if neighbour_path_len < *path_lens.get(&neighbour_state).unwrap_or(&u32::MAX) {
