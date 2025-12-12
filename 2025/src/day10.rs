@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::collections::HashMap;
 
 struct Machine {
@@ -84,4 +85,67 @@ pub fn part1(input: String) -> i64 {
         total += dfs(&mut state, &machine, 0, &mut HashMap::new());
     }
     total
+}
+
+fn dfs2(state: &mut Vec<u32>, machine: &Machine, path_len: usize, cache: &mut HashMap<(Vec<u32>, usize), i64>) -> i64 {
+    if *state == machine.joltages {
+        return 0;
+    }
+    for i in 0..state.len() {
+        if state[i] > machine.joltages[i] {
+            return -1; //Joltage too high!
+        }
+    }
+
+    let key = (state.clone(), path_len);
+    if let Some(c) = cache.get(&key) {
+        return *c;
+    }
+
+    let mut result = i64::MAX - 1;
+    for i in 0..machine.buttons.len() {
+        for &k in &machine.buttons[i] {
+            state[k] += 1;
+        }
+        let r = 1 + dfs2(state, machine, i + 1, cache);
+        if r > 0 {
+            result = result.min(r);
+        }
+        //Restore.
+        for &k in &machine.buttons[i] {
+            state[k] -= 1;
+        }
+    }
+
+    cache.insert(key, result);
+    result
+}
+
+pub fn part2(input: String) -> i64 {
+    let machines = parse(input);
+    machines.into_par_iter().map(|mut machine| {
+        println!("Machine joltages {:?}", machine.joltages);
+        //Sort the buttons by how commonly they affect each joltage.
+        let mut joltage_affected_count = vec![0; machine.joltages.len()];
+        for button in &machine.buttons {
+            for button_effect in button {
+                joltage_affected_count[*button_effect] += 1;
+            }
+        }
+        let mut button_damage = vec!();
+        let mut sort_indices = vec!();
+        for button in &machine.buttons {
+            let mut damage = 0;
+            for button_effect in button {
+                damage += joltage_affected_count[*button_effect];
+            }
+            button_damage.push(damage);
+            sort_indices.push(sort_indices.len());
+        }
+        sort_indices.sort_unstable_by_key(|i| button_damage[*i]);
+        machine.buttons = sort_indices.iter().map(|&i| machine.buttons[i].clone()).collect();
+
+        let mut state = vec![0; machine.joltages.len()];
+        dfs2(&mut state, &machine, 0, &mut HashMap::new())
+    }).sum::<i64>()
 }
