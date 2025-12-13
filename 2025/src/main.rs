@@ -16,14 +16,15 @@ mod day7;
 mod day8;
 mod day9;
 mod day10;
+mod day11;
 
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
 fn main() {
-	let contents = fs::read_to_string("inputs/day10_1.txt").expect("File should exist.");
+	let contents = fs::read_to_string("inputs/day11_1.txt").expect("File should exist.");
 	let start = Instant::now();
-	let answer = day10::part2(contents);
+	let answer = day11::part1(contents);
 	let elapsed = start.elapsed();
 	println!("ANSWER: {}", answer);
 	println!("Elapsed time: {:.2?}", elapsed);
